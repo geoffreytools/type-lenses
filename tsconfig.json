@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "rootDir": "./",
+        "noEmit": true,
+        "noErrorTruncation": true,
+        "moduleResolution": "node",
+        "module": "ES2020",
+        "target": "ES2020",
+        "strictFunctionTypes": true,
+        "noImplicitAny": true,
+        "strict": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+    ]
+}
