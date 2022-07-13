@@ -13,6 +13,8 @@
     "free-types": "github:geoffreytools/free-types-private"
   },
   "scripts": {
-    "watch": "tsc --watch"
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "trace": "tsc --generateTrace traceDir"
   }
 }
