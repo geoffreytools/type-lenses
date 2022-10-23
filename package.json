@@ -10,7 +10,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "free-types": "github:geoffreytools/free-types-private"
+    "free-types": "github:geoffreytools/free-types"
   },
   "scripts": {
     "build": "tsc",

@@ -1,6 +1,6 @@
 import { self, Param, Output, Key, PathItem, Fn, Indexable } from './types'
 import { Type, apply } from 'free-types/core';
-import { $SetIndex, $SetProp } from 'free-types/utility-types/mappables/accessors';
+import { $SetIndex, $SetProp } from 'free-types/essential/mappables/accessors';
 
 export { ModifyPath };
 

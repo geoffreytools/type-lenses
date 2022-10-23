@@ -3,7 +3,7 @@ import { Next } from './utils';
 import { FollowPath } from './Follow';
 import { Lens } from './Lens';
 import { Type, Checked, A, B, C, $partial, $apply } from 'free-types/core'
-import { MapOver } from 'free-types/utility-types/mappables/MapOver'
+import { MapOver } from 'free-types/essential/mappables/MapOver'
 
 export { Get, GetMulti, $Get }
 
