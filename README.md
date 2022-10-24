@@ -145,7 +145,7 @@ type FocusNeedle = Lens<[$Foo, 0]>;
 type Needle = Get<FocusNeedle, Haystack>; // needle
 ```
 
-`type-lenses` re-exports a [dozen](https://github.com/geoffreytools/free-types/blob/public/Documentation.md#free) built-in free type constructors under the namespace `free`.
+`type-lenses` re-exports a [dozen](https://github.com/geoffreytools/free-types/blob/public/doc/Documentation.md#free) built-in free type constructors under the namespace `free`.
 
 
 ## Querying and modifying types
