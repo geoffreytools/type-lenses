@@ -1,4 +1,4 @@
-import { test, Context } from 'ts-test';
+import { test, Context } from 'ts-spec';
 import { Get, GetMulti, Replace, Over, free, self, r, a, b, Lens, Output } from './';
 
 declare const needle: unique symbol;

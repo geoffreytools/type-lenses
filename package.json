@@ -6,11 +6,11 @@
   "author": "Geoffrey Gourdet",
   "license": "ISC",
   "devDependencies": {
-    "ts-test": "github:geoffreytools/ts-test",
+    "ts-spec": "^1.0.2",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "free-types": "github:geoffreytools/free-types"
+    "free-types": "^0.0.5"
   },
   "scripts": {
     "build": "tsc",
