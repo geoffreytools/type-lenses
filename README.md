@@ -2,6 +2,12 @@
 
 Extract or modify pieces of arbitrarily nested types with type lenses.
 
+## How to install
+
+```
+npm install type-lenses
+```
+
 ## Overview
 We are interested in `needle` in the type bellow
 ```typescript
