@@ -8,13 +8,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/geoffreytools/type-lenses"
-},
+  },
   "devDependencies": {
     "ts-spec": "^1.0.2",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "free-types": "^0.0.5"
+    "free-types": "^0.1.0"
   },
   "scripts": {
     "build": "tsc",

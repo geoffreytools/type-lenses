@@ -2,8 +2,8 @@ import { Query } from './types'
 import { Next } from './utils';
 import { FollowPath } from './Follow';
 import { Lens } from './Lens';
-import { Type, Checked, A, B, C, $partial, $apply } from 'free-types/core'
-import { MapOver } from 'free-types/essential/mappables/MapOver'
+import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types/core'
+import { MapOver, _$Optional, _ } from 'free-types/essential';
 
 export { Get, GetMulti, $Get }
 
@@ -19,6 +19,9 @@ type _Get<L extends Lens, Data, Self, I extends number = 0> =
 type GetMulti<Qs extends Query[], Data, Self = Data> =
     MapOver<MapOver<Qs, $partial<$Get>>, $apply<[Data, Self]>>
 
-interface $Get extends Type<[Query, unknown, unknown]> {
-    type: Get<Checked<A, this>, B<this>, C<this>>
+interface _$Get extends Type<[Query, unknown, unknown?]> {
+    type: Get<Checked<A, this>, B<this>, Optional<C, this, B<this>>>
 }
+
+type $Get<Q extends Query= never, Self = never> =
+    _$Optional<_$Get, [Q, _, Self]>
