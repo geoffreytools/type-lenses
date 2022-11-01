@@ -134,7 +134,11 @@ In a nutshell:
 class Foo<T extends number> {
     constructor(private value: T) {}
 }
-
+```
+```bash
+npm install free-types
+```
+```typescript
 import { Type, A } from 'free-types'
 
 // A free type constructor for that class
