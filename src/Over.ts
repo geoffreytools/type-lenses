@@ -5,7 +5,7 @@ import { ModifyPath } from './Modify';
 import { FollowPath } from './Follow';
 import { Lens } from './Lens';
 
-export { Over };
+export { Over, $Over };
 
 type Over<Q extends Query, Data, V extends Type> =
     _Over<Lens<Q>, Data, V>
@@ -20,3 +20,7 @@ type _Over<
     I extends L['path']['length']
     ? apply<V, [Data]>
     : ModifyPath<C, Data, _Over<L, FollowPath<C, Data, Data>, V, Next<I>>>;
+
+interface $Over<Q extends Query, V extends Type> extends Type<1> {
+    type: _Over<Lens<Q>, this[0], V>
+}

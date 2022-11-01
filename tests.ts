@@ -1,5 +1,9 @@
+import { apply, $Next } from 'free-types';
 import { test, Context } from 'ts-spec';
 import { Get, GetMulti, Replace, Over, free, self, r, a, b, Lens, Output } from './';
+import { $Get, $GetMulti } from './src/Get';
+import { $Over } from './src/Over';
+import { $Replace } from './src/Replace';
 
 declare const needle: unique symbol;
 type needle = typeof needle;
@@ -164,4 +168,45 @@ test('GetMulti' as const, t => {
     type Paths = [['a', 'foo'], ['b', 1, 0], ['c', free.Set, 0]]
     type Test = GetMulti<Paths, Model>;
     return t.equal<Test, [1,2,3]>()
+})
+
+test('$Replace produces a free type expecting Data' as const, t => {
+    type $Action = $Replace<'foo', 'hello'>;
+    type Data = { foo: needle };
+    type Result = apply<$Action, [Data]>
+
+    return t.equal<Result, { foo: 'hello' }>()
+})
+
+test('$Over produces a free type expecting Data' as const, t => {
+    type $Action = $Over<'foo', $Next>;
+    type Data = { foo: 1 };
+    type Result = apply<$Action, [Data]>
+
+    return t.equal<Result, { foo: 2 }>()
+})
+
+test('$Get produces a free type expecting Data' as const, t => {
+    type $Action = $Get<'foo'>;
+    type Data = { foo: needle };
+    type Result = apply<$Action, [Data]>
+
+    return t.equal<Result, needle>()
+})
+
+test('$Get produces a free type expecting Data - Self' as const, t => {
+    type $Action = $Get<self>;
+    type Data = { foo: needle };
+    type Self = needle;
+    type Result = apply<$Action, [Data, Self]>
+
+    return t.equal<Result, needle>()
+})
+
+test('$GetMulti produces a free type expecting Data' as const, t => {
+    type $Action = $GetMulti<['foo', ['bar', 2]]>;
+    type Data = { foo: 'hello', bar: [0, 1, 'world'] };
+    type Result = apply<$Action, [Data]>
+
+    return t.equal<Result, ['hello', 'world']>()
 })

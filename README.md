@@ -204,4 +204,16 @@ Map over the queried piece of type with a free type
 |Haystack| The type you want to modify
 |$Type | A free type constructor
 
-Look up the [free-types](https://github.com/geoffreytools/free-types) documentation for more information.
+See [free-types](https://github.com/geoffreytools/free-types) for more information.
+
+### `$Get`, `$GetMulti`, `$Replace`, `$Over`
+Free versions of `Get`, `GetMulti`, `Replace` and `Over`.
+
+Can be used like so:
+```typescript
+import { apply } from 'free-types';
+
+type $NeedleSelector = $Get<Query>
+type Needle = apply<$NeedleSelector, [Haystack]>;
+```
+See [free-types](https://github.com/geoffreytools/free-types) for more information.
