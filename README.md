@@ -65,7 +65,7 @@ You can define arbitrary free types including procedural ones. See the documenta
 
 # Documentation
 
-[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over)
+[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [Free utils](#get-getmulti-replace-over)
 
 ### `Lens`
 You can create a lens by passing a `Query` to `Lens`.
