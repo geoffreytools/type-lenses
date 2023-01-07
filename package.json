@@ -15,11 +15,11 @@
     "url": "https://github.com/geoffreytools/type-lenses"
   },
   "devDependencies": {
-    "ts-spec": "^1.0.2",
+    "ts-spec": "^1.2.1",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "free-types": "^0.1.0"
+    "free-types": "^0.2.9"
   },
   "scripts": {
     "build": "tsc",
