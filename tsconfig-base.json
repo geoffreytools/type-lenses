@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "noEmitOnError": true,
+        "noErrorTruncation": true,
+        "moduleResolution": "node",
+        "module": "ES2020",
+        "target": "ESNext",
+        "strictFunctionTypes": true,
+        "noImplicitAny": true,
+        "strict": true
+    }
+}
