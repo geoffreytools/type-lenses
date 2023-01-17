@@ -1,15 +1,15 @@
 import { Next } from './utils';
 
-import { PathItem, Query, brand } from './types'
-import { Type, A } from 'free-types/core';
+import { PathItem, Query } from './types'
+import { Type, A } from 'free-types-core';
 
 export { Lens, $Lens }
 
 type Lens<Q extends Query=never> =
-    [Q] extends [never] ? { [brand]: 'lens' , path: PathItem[] }
-    : Q extends { [brand]: 'lens' } ? Q
-    : Q extends PathItem ? { [brand]: 'lens', path: [Q] }
-    : Q extends (PathItem | Lens)[] ? { [brand]: 'lens', path: Flatten<Q> }
+    [Q] extends [never] ? { __type_lenses: 'lens' , path: PathItem[] }
+    : Q extends { __type_lenses: 'lens' } ? Q
+    : Q extends PathItem ? { __type_lenses: 'lens', path: [Q] }
+    : Q extends (PathItem | Lens)[] ? { __type_lenses: 'lens', path: Flatten<Q> }
     : never ;
 
 interface $Lens extends Type<[Query], Lens> {

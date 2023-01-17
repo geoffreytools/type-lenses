@@ -2,7 +2,7 @@ import { Query } from './types'
 import { Next } from './utils';
 import { FollowPath } from './Follow';
 import { Lens } from './Lens';
-import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types/core'
+import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types-core'
 import { MapOver, _$Optional, _ } from 'free-types/essential';
 
 export { Get, GetMulti, $Get, $GetMulti }

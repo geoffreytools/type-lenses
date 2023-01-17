@@ -1,5 +1,5 @@
 import { self, Param, Output, Key, PathItem, Indexable, Fn } from './types'
-import { Type, inferArgs } from 'free-types/core';
+import { Type, inferArgs } from 'free-types-core';
 
 export { FollowPath }
 

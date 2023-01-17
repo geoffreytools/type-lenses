@@ -1,5 +1,5 @@
 import { PathItem, Query } from './types'
-import { Type, apply } from 'free-types/core';
+import { Type, apply } from 'free-types-core';
 import { Next } from './utils';
 import { ModifyPath } from './Modify';
 import { FollowPath } from './Follow';
