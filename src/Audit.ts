@@ -1,5 +1,5 @@
 import { TypesMap, Generic, unwrap } from 'free-types-core';
-import { Fn, Param, Output } from './types'
+import { Fn, Param, Output, Query, ILens } from './types'
 import { Prev, Next } from './utils';
 import { Lens } from './Lens'
 import { FollowPath, NOT_FOUND } from './Follow';
@@ -8,12 +8,13 @@ export type Audit<
     L extends Lens,
     Model,
     I extends number = 0,
+    L extends ILens = Lens<Q>,
     F = FollowPath<L['path'][I], Model, Model>
 > = F extends NOT_FOUND ? [...LastPathItem<L, I>, NextPathItem<Model>]
     : Next<I> extends L['path']['length'] ? F
     : Audit<L, F, Next<I>>;
 
-type LastPathItem<L extends Lens, I extends number> =
+type LastPathItem<L extends ILens, I extends number> =
     I extends 0 ? [] :  [L['path'][Prev<I>]];
 
 type NextPathItem<Model> =

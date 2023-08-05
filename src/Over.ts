@@ -1,4 +1,4 @@
-import { PathItem, Query } from './types'
+import { PathItem, Query, ILens } from './types'
 import { Type, apply } from 'free-types-core';
 import { Next } from './utils';
 import { ModifyPath } from './Modify';
@@ -11,7 +11,7 @@ type Over<Q extends Query, Data, V extends Type> =
     _Over<Lens<Q>, Data, V>
 
 type _Over<
-    L extends Lens,
+    L extends ILens,
     Data,
     V extends Type,
     I extends number = 0,

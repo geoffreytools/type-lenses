@@ -1,4 +1,4 @@
-import { PathItem, Query } from './types'
+import { PathItem, Query, ILens } from './types'
 import { Type } from 'free-types-core';
 import { Next, Last } from './utils';
 import { ModifyPath } from './Modify';
@@ -14,7 +14,7 @@ type ValidValue<Q extends Query, L = Last<Lens<Q>['path']>> =
     L extends Type ? L['constraints'] : unknown 
 
 type _Replace<
-    L extends Lens,
+    L extends ILens,
     Data,
     V,
     I extends number = 0,

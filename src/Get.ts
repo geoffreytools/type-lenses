@@ -1,4 +1,4 @@
-import { Query } from './types'
+import { Query, ILens } from './types'
 import { Next } from './utils';
 import { FollowPath, NOT_FOUND } from './Follow';
 import { Lens } from './Lens';
@@ -11,7 +11,7 @@ type Get<Q extends Query, Data, Self = Data> =
     _Get<Lens<Q>, Data, Self>
 
 type _Get<
-    L extends Lens,
+    L extends ILens,
     Data,
     Self,
     I extends number = 0,
