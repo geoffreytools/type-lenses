@@ -92,6 +92,45 @@ test('Lens composition' as const, t =>
     >()
 )
 
+{ 'Flat Lens type checking'
+
+    // OK
+    { type L = Lens<['a'], { a: [1, 2, 3] }> }
+    { type L = Lens<['a', 0], { a: [1, 2, 3] }> }
+    { type L = Lens<['a', 'c'], { a: { c: 1 } }> }
+    { type L = Lens<[free.Map], Map<string, unknown>> }
+    { type L = Lens<['a', free.Map], { a: Map<string, unknown> }> }
+    { type L = Lens<[a], (a: any, b: any) => unknown> }
+
+    // @ts-expect-error "b" is not assignable to "a"
+    { type L = Lens<['b'], { a: [1, 2, 3] }> }
+    
+    // @ts-expect-error: "b" is not assignable to 0 | 1 | 2
+    { type L = Lens<['a', 'b'], { a: [1, 2, 3] }> }
+    
+    // @ts-expect-error: "b" is not assignable to "c"
+    { type L = Lens<['a', 'b'], { a: { c: 1 } }> }
+    
+    // @ts-expect-error: "b" is not assignable to $Map
+    { type L = Lens<['a', 'b'], { a: Map<string, unknown> }> }
+    
+    // @ts-expect-error: "b" is not assignable to Output | Param
+    { type L = Lens<['a', 'b'], { a: (...args: any[]) => unknown }> }
+    
+    // @ts-expect-error: $Set is not assignable to $Map
+    {type L = Lens<[free.Set], Map<string, unknown>>}
+    
+    // @ts-expect-error: [1, $Set] is not assignable to [1, $Map].
+    {type L = Lens<[1, free.Set], [0, Map<string, unknown>]>}
+    
+    // @ts-expect-error: [$Map, 2] is not assignable to [$Map, 0 | 1]
+    {type L = Lens<[free.Map, 2], Map<string, unknown>>}
+    
+    // @ts-expect-error: b is not assignable to Output | Param<0>
+    { type L = Lens<[b], (a: any) => unknown> }
+    
+}
+
 test('bare Get: tuple, object' as const, t => [
     found(t)<Get<0, [needle, 2, 3]>>(),
     found(t)<Get<'a', { a: needle, b: 2 }>>(),
