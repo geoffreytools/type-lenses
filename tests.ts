@@ -36,7 +36,8 @@ test('Get: return `never` when needle is not found' as const, t =>  {
         t.never<Get<[free.Map, 5], Haystack>>(),
         t.never<Get<[free.Map, 1, 'bar'], Haystack>>(),
         t.never<Get<[free.Map, 1, 'foo', 2], Haystack>>(),
-        t.equal<[never], GetMulti<[[free.Function]], Haystack>>(),
+        t.never<Get<[b], (a: any) => unknown>>(),
+        t.equal<[never], GetMulti<[[free.Function]], Haystack>>()
     ];
 })
 
