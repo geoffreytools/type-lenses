@@ -161,7 +161,7 @@ type Needle = Get<FocusNeedle, Haystack>; // needle
 ## Querying and modifying types
 
 ### `Get`
-Return the queried piece of type.
+Return the queried piece of type or `never` if it is not found.
 
 #### Syntax
 `Get<Query, Haystack, Self>`
@@ -180,7 +180,7 @@ The same as `Get`, but takes a tuple of `Query` and returns a tuple of results.
 
 ### `Replace`
 
-Replace the queried piece of type with a new value in the parent type.
+Replace the queried piece of type with a new value in the parent type, or return the parent type unchanged if the query failed.
 
 #### Syntax
 `Replace<Query, Haystack, Value>`
@@ -193,7 +193,7 @@ Replace the queried piece of type with a new value in the parent type.
 
 ### `Over`
 
-Map over the queried piece of type with a free type
+Map over the parent type, replacing the queried piece of type with the result of applying it to the provided free type. Return the parent type unchanged if the query failed.
 
 #### Syntax
 `Over<Query, Haystack, $Type>`

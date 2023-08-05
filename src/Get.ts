@@ -1,6 +1,6 @@
 import { Query } from './types'
 import { Next } from './utils';
-import { FollowPath } from './Follow';
+import { FollowPath, NOT_FOUND } from './Follow';
 import { Lens } from './Lens';
 import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types-core'
 import { MapOver, _$Optional, _ } from 'free-types/essential';
@@ -10,10 +10,15 @@ export { Get, GetMulti, $Get, $GetMulti }
 type Get<Q extends Query, Data, Self = Data> =
     _Get<Lens<Q>, Data, Self>
 
-type _Get<L extends Lens, Data, Self, I extends number = 0> = 
-    Next<I> extends L['path']['length']
-    ? FollowPath<L['path'][I], Data, Self>
-    : _Get<L, FollowPath<L['path'][I], Data, Self>, Self, Next<I>>;
+type _Get<
+    L extends Lens,
+    Data,
+    Self,
+    I extends number = 0,
+    F = FollowPath<L['path'][I], Data, Self>
+> = F extends NOT_FOUND ? never
+    : Next<I> extends L['path']['length'] ? F
+    : _Get<L, F, Self, Next<I>>;
 
 // naive implementation but it is not obvious that a custom traversal would perform better
 type GetMulti<Qs extends Query[], Data, Self = Data> =

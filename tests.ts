@@ -23,8 +23,46 @@ const found = <T>(t: Context<T>) => t.equal<needle>();
         found(t)<Get<FocusNeedle, Haystack>>(),
         t.equal<Replace<FocusNeedle, Haystack, 'Yiha!'>, YihaStack>(),
         t.equal<Over<FocusNeedle, Haystack, free.Promise>, TweenStack>()
-    ])
-}
+    ];
+})
+
+
+test('Get: return `never` when needle is not found' as const, t =>  {
+    type Haystack = Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
+
+    return [
+        t.never<Get<[free.Function], Haystack>>(),
+        t.never<Get<[free.ReadonlySet], Haystack>>(),
+        t.never<Get<[free.Map, 5], Haystack>>(),
+        t.never<Get<[free.Map, 1, 'bar'], Haystack>>(),
+        t.never<Get<[free.Map, 1, 'foo', 2], Haystack>>(),
+        t.equal<[never], GetMulti<[[free.Function]], Haystack>>(),
+    ];
+})
+
+test('Replace: return the input unchanged when needle is not found' as const, t =>  {
+    type Haystack = Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
+
+    return [
+        t.equal<Haystack, Replace<[free.Function], Haystack, ['X'[], 'X']>>(),
+        t.equal<Haystack, Replace<[free.ReadonlySet], Haystack, ['X']>>(),
+        t.equal<Haystack, Replace<[free.Map, 5], Haystack, 'X'>>(),
+        t.equal<Haystack, Replace<[free.Map, 1, 'bar'], Haystack, 'X'>>(),
+        t.equal<Haystack, Replace<[free.Map, 1, 'foo', 2], Haystack, 'X'>>(),
+    ];
+})
+
+test('Over: return the input unchanged when needle is not found' as const, t =>  {
+    type Haystack = Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
+
+    return [
+        t.equal<Haystack, Over<[free.Function], Haystack, free.Promise>>(),
+        t.equal<Haystack, Over<[free.ReadonlySet], Haystack, free.Promise>>(),
+        t.equal<Haystack, Over<[free.Map, 5], Haystack, free.Promise>>(),
+        t.equal<Haystack, Over<[free.Map, 1, 'bar'], Haystack, free.Promise>>(),
+        t.equal<Haystack, Over<[free.Map, 1, 'foo', 2], Haystack, free.Promise>>(),
+    ];
+})
 
 test('r' as const, t => [
     t.equal<r, Output>(),
