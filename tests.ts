@@ -119,6 +119,10 @@ test('Flat Lens type checking', t => [
     OK(t)<Audit<[a], (a: any, b: any) => unknown>>(),
 
     t.equal<
+        Audit<'b', { a: [1, 2, 3] }>,
+        'a'
+    >(),
+    t.equal<
         Audit<['b'], { a: [1, 2, 3] }>,
         ['a']
     >(),

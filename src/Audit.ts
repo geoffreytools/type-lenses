@@ -24,6 +24,7 @@ type HandleError<
 > = Q extends ILens ? Lens<R>
     : Q extends [ILens] ? [Lens<R>]
     : Q extends QueryItem[] ? MapOver<R, $WrapIfLens<Q>>
+    : Q extends QueryItem ? R[0]
     : R
 
 interface $WrapIfLens<Q extends QueryItem[]> extends Type<2> {
