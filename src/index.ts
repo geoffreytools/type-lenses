@@ -9,16 +9,20 @@ export { inferArgs } from 'free-types-core';
 
 import { Audit } from './Audit'
 import { Get } from './Get'
-import { Lens as CreateLens } from './Lens';
+import { Lens as CreateLens, $Lens } from './Lens';
 import { ILens, Query } from './types'
 
-export type Lens<
-    Q extends Check & Query = never,
+export { Lens, $Lens }
+
+type Lens<
+    Q extends Check = never,
     Model = never,
     Check = CheckQuery<Q, Model>
 > = [Q] extends [never] ? ILens : CreateLens<Q>
 
-type CheckQuery<Q extends Query, Model> =
-    [Model] extends [never] ? unknown
-    : [Get<Q, Model>] extends [never] ? Audit<Lens<Q>, Model>
-    : unknown;
+type CheckQuery<Q, Model> =
+    [Model] extends [never]
+    ? Query
+    : Q extends Query
+    ? [Get<Q, Model>] extends [never] ? Audit<CreateLens<Q>, Model> : Query
+    : Query;
