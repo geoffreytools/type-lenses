@@ -1,6 +1,6 @@
 {
   "name": "type-lenses",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Extract or modify pieces of arbitrarily nested types with type lenses",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
