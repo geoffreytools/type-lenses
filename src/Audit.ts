@@ -1,8 +1,9 @@
-import { TypesMap, Generic, unwrap } from 'free-types-core';
-import { Fn, Param, Output, Query, ILens, PathItem } from './types'
+import { TypesMap, Generic, unwrap, Type, B } from 'free-types-core';
+import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types'
 import { Prev, Next } from './utils';
 import { Lens } from './Lens'
 import { FollowPath, NOT_FOUND } from './Follow';
+import { MapOver } from 'free-types/essential/mappables/MapOver';
 
 export type Audit<
     Q extends Query,
@@ -10,12 +11,28 @@ export type Audit<
     I extends number = 0,
     L extends ILens = Lens<Q>,
     F = FollowPath<L['path'][I], Model, Model>
-> = F extends NOT_FOUND ? ProperPath<Model, L, I>
+> = F extends NOT_FOUND ? HandleError<Model, Q, L, I>
     : Next<I> extends L['path']['length'] ? Query
-    : Audit<L, F, Next<I>>;
+    : Audit<Q, F, Next<I>, L>;
 
-type ProperPath<Model, Q extends ILens, I extends number> =
-    [...LastPathItem<Q['path'], I>, NextPathItem<Model>]
+type HandleError<
+    Model,
+    Q extends Query,
+    L extends ILens,
+    I extends number,
+    R extends QueryItem[] = ProperPath<Model, L, I>
+> = Q extends ILens ? Lens<R>
+    : Q extends [ILens] ? [Lens<R>]
+    : Q extends QueryItem[] ? MapOver<R, $WrapIfLens<Q>>
+    : R
+
+interface $WrapIfLens<Q extends QueryItem[]> extends Type<2> {
+    type: Q[B<this>] extends ILens ? Lens<this[0]> : this[0]
+    constraints: [QueryItem, number]
+}
+
+type ProperPath<Model, L extends ILens, I extends number> =
+    [...LastPathItem<L['path'], I>, NextPathItem<Model>]
 
 type LastPathItem<P extends PathItem[], I extends number> =
     I extends 0 ? [] :  [P[Prev<I>]];
@@ -24,7 +41,7 @@ type NextPathItem<Model> =
     readonly any[] extends Model ? number
     : Model extends readonly unknown[] ? NumericArgs<Model>
     : Model extends Fn ? Output | Param<SequenceTo<Prev<Parameters<Model>['length']>>>
-    : Model extends GenericFree ? TypesMap[unwrap<Model>['URI']]
+    : Model extends GenericFree ? unwrap<Model>['type']
     : Model extends Record<PropertyKey, unknown> ? { [K in keyof Model]: K }[keyof Model]
     : never
 

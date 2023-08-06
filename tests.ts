@@ -156,6 +156,39 @@ test('Flat Lens type checking', t => [
     >(),
 ])
 
+test('Nested Lens type checking', t => [
+    OK(t)<Audit<Lens<['a', 0]>, { a: [1, 2, 3] }>>(),
+    OK(t)<Audit<[Lens<['a', 0]>], { a: [1, 2, 3] }>>(),
+    OK(t)<Audit<[Lens<'a'>, Lens<0>], { a: [1, 2, 3] }>>(),
+
+    t.equal<
+        Audit<Lens<['a', 'b']>, { a: [1, 2, 3] }>,
+        Lens<["a", 0 | 1 | 2]>
+    >(),
+    t.equal<
+        Audit<[Lens<['a', 'b']>], { a: [1, 2, 3] }>,
+        [Lens<["a", 0 | 1 | 2]>]
+    >(),
+    t.equal<
+        Audit<[Lens<'a'>, Lens<'b'>], { a: [1, 2, 3] }>,
+        [Lens<'a'>, Lens<0 | 1 | 2>]
+    >(),
+    t.equal<
+        Audit<['a', Lens<'b'>], { a: [1, 2, 3] }>,
+        ['a', Lens<0 | 1 | 2>]
+    >(),
+    t.equal<
+        Audit<[Lens<'a'>, 'b'], { a: [1, 2, 3] }>,
+        [Lens<'a'>, 0 | 1 | 2]
+    >(),
+
+    // They are expected to flatten
+    t.equal<
+        Audit<Lens<[Lens<'a'>, Lens<'b'>]>, { a: [1, 2, 3] }>,
+        Lens<['a' , 0 | 1 | 2]>
+    >(),
+]);
+
 test('bare Get: tuple, object', t => [
     found(t)<Get<0, [needle, 2, 3]>>(),
     found(t)<Get<'a', { a: needle, b: 2 }>>(),
