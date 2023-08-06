@@ -123,6 +123,14 @@ test('Flat Lens type checking', t => [
         'a'
     >(),
     t.equal<
+        Audit<['a', 0, 0], { a: [1, 2, 3] }>,
+        ['a', 0]
+    >(),
+    t.equal<
+        Audit<['a', 0, 0, 0], { a: [1, 2, 3] }>,
+        ['a', 0]
+    >(),
+    t.equal<
         Audit<['b'], { a: [1, 2, 3] }>,
         ['a']
     >(),

@@ -32,8 +32,10 @@ interface $WrapIfLens<Q extends QueryItem[]> extends Type<2> {
     constraints: [QueryItem, number]
 }
 
-type ProperPath<Model, L extends ILens, I extends number> =
-    [...LastPathItem<L['path'], I>, NextPathItem<Model>]
+type ProperPath<Model, L extends ILens, I extends number, N = NextPathItem<Model>> =
+    [N] extends [never]
+    ? LastPathItem<L['path'], I>
+    : [...LastPathItem<L['path'], I>, NextPathItem<Model>]
 
 type LastPathItem<P extends PathItem[], I extends number> =
     I extends 0 ? [] :  Slice<P, 0, I>;
