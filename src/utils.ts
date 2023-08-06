@@ -1,1 +1,1 @@
-export { Next, Prev, Last } from 'free-types-core/dist/utils';
+export { Next, Prev, Last, IsAny } from 'free-types-core/dist/utils';

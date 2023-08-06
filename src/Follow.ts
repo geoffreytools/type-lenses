@@ -1,5 +1,6 @@
 import { self, Param, Output, Key, PathItem, Fn } from './types'
 import { Type, inferArgs, Generic, apply } from 'free-types-core';
+import { IsAny } from './utils';
 
 export { FollowPath, NOT_FOUND }
 
@@ -19,7 +20,10 @@ type FollowPath<I extends PathItem, Data, Self> =
     : I extends Type ? FreeTypeArgs<Data, I>
     : NOT_FOUND
 
-type IfDefined<T> = [T] extends [undefined] ? NOT_FOUND : T;
+type IfDefined<T> =
+    IsAny<T> extends true ? T
+    : [T] extends [undefined] ? NOT_FOUND
+    : T;
 
 type FreeTypeArgs<T, $T extends Type> =
     apply<$T, any[]> extends T

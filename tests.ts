@@ -149,6 +149,14 @@ test('bare Get: tuple, object', t => [
     found(t)<Get<'a', { a: needle, b: 2 }>>(),
 ]);
 
+test('Get `any`', t => [
+    t.any<Get<'a', { a: any }>>(),
+    t.any<Get<0, [any, 2, 3]>>(),
+    t.any<Get<a, (a: any) => unknown>>(),
+    t.any<Get<r, () => any>>(),
+    t.any<Get<[free.Map, 1], Map<string, any>>>(),
+])
+
 test('bare Get: function', t => [
     found(t)<Get<a, (arg1: needle, arg2: number) => void>>(),
     found(t)<Get<r, () => needle>>(),
