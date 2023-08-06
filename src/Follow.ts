@@ -1,6 +1,6 @@
 import { self, Param, Output, Key, PathItem, Fn } from './types'
 import { Type, inferArgs, Generic, apply } from 'free-types-core';
-import { IsAny } from './utils';
+import { IsAny, Parameters } from './utils';
 
 export { FollowPath, NOT_FOUND }
 

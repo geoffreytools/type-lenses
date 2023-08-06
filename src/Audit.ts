@@ -1,6 +1,6 @@
 import { TypesMap, Generic, unwrap, Type, B, Slice } from 'free-types-core';
 import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types'
-import { Prev, Next } from './utils';
+import { Prev, Next, Parameters } from './utils';
 import { Lens } from './Lens'
 import { FollowPath, NOT_FOUND } from './Follow';
 import { MapOver } from 'free-types/essential/mappables/MapOver';
@@ -60,46 +60,3 @@ type GenericFree = Exclude<
 type SequenceTo<N extends number, I extends number = 0, R = never> =
     I extends N ? R | I
     : SequenceTo<N, Next<I>, R | I>
-
-type Parameters<F, P = 
-    F extends {
-        (...args: infer A): any
-        (...args: infer B): any
-        (...args: infer C): any 
-        (...args: infer D): any
-        (...args: infer E): any
-        (...args: infer F): any
-    } ? A | B | C | D | E | F
-
-    : F extends {
-        (...args: infer A): any
-        (...args: infer B): any
-        (...args: infer C): any 
-        (...args: infer D): any
-        (...args: infer E): any
-    } ? A | B | C | D | E 
-
-    : F extends {
-        (...args: infer A): any
-        (...args: infer B): any
-        (...args: infer C): any 
-        (...args: infer D): any
-    } ? A | B | C | D 
-
-    : F extends {
-        (...args: infer A): any
-        (...args: infer B): any
-        (...args: infer C): any
-    } ? A | B | C
-
-    : F extends {
-        (...args: infer A): any
-        (...args: infer B): any
-    } ? A | B
-
-    : F extends {
-        (...args: infer A): any
-    } ? A
-
-    : never
-> = P extends any ? unknown[] extends P ? never : P : never;

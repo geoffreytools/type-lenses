@@ -117,6 +117,11 @@ test('Flat Lens type checking', t => [
     OK(t)<Audit<[free.Map], Map<string, unknown>>>(),
     OK(t)<Audit<['a', free.Map], { a: Map<string, unknown> }>>(),
     OK(t)<Audit<[a], (a: any, b: any) => unknown>>(),
+    OK(t)<Audit<[b], {
+        (a: any, b: any, c: any): unknown
+        (a: any, b: any): unknown
+        (a: any): unknown
+    }>>(),
 
     t.equal<
         Audit<'b', { a: [1, 2, 3] }>,
@@ -226,7 +231,12 @@ test('bare Get: function', t => [
     found(t)<Get<a, (arg1: needle, arg2: number) => void>>(),
     found(t)<Get<r, () => needle>>(),
     found(t)<Get<r<1>, [1, () => needle]>>(),
-    found(t)<Get<r<a>, (arg1: () => needle) => void>>()
+    found(t)<Get<r<a>, (arg1: () => needle) => void>>(),
+    t.equal<Get<b, {
+        (a: any, b: needle, c: any): unknown
+        (a: any, b: needle): unknown
+        (a: any): unknown
+    }>, needle | undefined>()
 ]);
 
 test('tuple Get: tuple, object', t =>  [
