@@ -21,8 +21,6 @@ type Lens<
 > = [Q] extends [never] ? ILens : CreateLens<Q>
 
 type CheckQuery<Q, Model> =
-    [Model] extends [never]
-    ? Query
-    : Q extends Query
-    ? [Get<Q, Model>] extends [never] ? Audit<CreateLens<Q>, Model> : Query
+    [Model] extends [never] ? Query
+    : Q extends Query ? Audit<Q, Model>
     : Query;

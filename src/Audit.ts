@@ -1,21 +1,24 @@
 import { TypesMap, Generic, unwrap } from 'free-types-core';
-import { Fn, Param, Output, Query, ILens } from './types'
+import { Fn, Param, Output, Query, ILens, PathItem } from './types'
 import { Prev, Next } from './utils';
 import { Lens } from './Lens'
 import { FollowPath, NOT_FOUND } from './Follow';
 
 export type Audit<
-    L extends Lens,
+    Q extends Query,
     Model,
     I extends number = 0,
     L extends ILens = Lens<Q>,
     F = FollowPath<L['path'][I], Model, Model>
-> = F extends NOT_FOUND ? [...LastPathItem<L, I>, NextPathItem<Model>]
-    : Next<I> extends L['path']['length'] ? F
+> = F extends NOT_FOUND ? ProperPath<Model, L, I>
+    : Next<I> extends L['path']['length'] ? Query
     : Audit<L, F, Next<I>>;
 
-type LastPathItem<L extends ILens, I extends number> =
-    I extends 0 ? [] :  [L['path'][Prev<I>]];
+type ProperPath<Model, Q extends ILens, I extends number> =
+    [...LastPathItem<Q['path'], I>, NextPathItem<Model>]
+
+type LastPathItem<P extends PathItem[], I extends number> =
+    I extends 0 ? [] :  [P[Prev<I>]];
 
 type NextPathItem<Model> =
     readonly any[] extends Model ? number

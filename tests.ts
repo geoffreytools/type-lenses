@@ -16,7 +16,10 @@ import {
     $Over,
     free,
     self,
+    Query
 } from './src/';
+
+import { Audit } from './src/Audit';
 
 declare const needle: unique symbol;
 type needle = typeof needle;
@@ -105,44 +108,53 @@ test('Lens composition', t =>
     >()
 )
 
-{ 'Flat Lens type checking'
+const OK = <T extends string>(t: Context<T>) => t.equal<Query>();
 
-    // OK
-    { type L = Lens<['a'], { a: [1, 2, 3] }> }
-    { type L = Lens<['a', 0], { a: [1, 2, 3] }> }
-    { type L = Lens<['a', 'c'], { a: { c: 1 } }> }
-    { type L = Lens<[free.Map], Map<string, unknown>> }
-    { type L = Lens<['a', free.Map], { a: Map<string, unknown> }> }
-    { type L = Lens<[a], (a: any, b: any) => unknown> }
+test('Flat Lens type checking', t => [
+    OK(t)<Audit<['a'], { a: [1, 2, 3] }>>(),
+    OK(t)<Audit<['a', 0], { a: [1, 2, 3] }>>(),
+    OK(t)<Audit<['a', 'c'], { a: { c: 1 } }>>(),
+    OK(t)<Audit<[free.Map], Map<string, unknown>>>(),
+    OK(t)<Audit<['a', free.Map], { a: Map<string, unknown> }>>(),
+    OK(t)<Audit<[a], (a: any, b: any) => unknown>>(),
 
-    // @ts-expect-error "b" is not assignable to "a"
-    { type L = Lens<['b'], { a: [1, 2, 3] }> }
-    
-    // @ts-expect-error: "b" is not assignable to 0 | 1 | 2
-    { type L = Lens<['a', 'b'], { a: [1, 2, 3] }> }
-    
-    // @ts-expect-error: "b" is not assignable to "c"
-    { type L = Lens<['a', 'b'], { a: { c: 1 } }> }
-    
-    // @ts-expect-error: "b" is not assignable to $Map
-    { type L = Lens<['a', 'b'], { a: Map<string, unknown> }> }
-    
-    // @ts-expect-error: "b" is not assignable to Output | Param
-    { type L = Lens<['a', 'b'], { a: (...args: any[]) => unknown }> }
-    
-    // @ts-expect-error: $Set is not assignable to $Map
-    {type L = Lens<[free.Set], Map<string, unknown>>}
-    
-    // @ts-expect-error: [1, $Set] is not assignable to [1, $Map].
-    {type L = Lens<[1, free.Set], [0, Map<string, unknown>]>}
-    
-    // @ts-expect-error: [$Map, 2] is not assignable to [$Map, 0 | 1]
-    {type L = Lens<[free.Map, 2], Map<string, unknown>>}
-    
-    // @ts-expect-error: b is not assignable to Output | Param<0>
-    { type L = Lens<[b], (a: any) => unknown> }
-    
-}
+    t.equal<
+        Audit<['b'], { a: [1, 2, 3] }>,
+        ['a']
+    >(),
+    t.equal<
+        Audit<['a', 'b'], { a: [1, 2, 3] }>,
+        ['a', 0 | 1 | 2]
+    >(),
+    t.equal<
+        Audit<['a', 'b'], { a: { c: 1 } }>,
+        ['a', 'c']
+    >(),
+    t.equal<
+        Audit<['a', 'b'], { a: Map<string, unknown> }>,
+        ['a', free.Map]
+    >(),
+    t.equal<
+        Audit<['a', 'b'], { a: (...args: any[]) => unknown }>,
+        ['a', a | r]
+    >(),
+    t.equal<
+        Audit<[free.Set], Map<string, unknown>>,
+        [free.Map]
+    >(),
+    t.equal<
+        Audit<[1, free.Set], [0, Map<string, unknown>]>,
+        [1, free.Map]
+    >(),
+    t.equal<
+        Audit<[free.Map, 2], Map<string, unknown>>,
+        [free.Map, 0 | 1]
+    >(),
+    t.equal<
+        Audit<[b], (a: any) => unknown>,
+        [a | r]
+    >(),
+])
 
 test('bare Get: tuple, object', t => [
     found(t)<Get<0, [needle, 2, 3]>>(),
