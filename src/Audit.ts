@@ -1,4 +1,4 @@
-import { TypesMap, Generic, unwrap, Type, B } from 'free-types-core';
+import { TypesMap, Generic, unwrap, Type, B, Slice } from 'free-types-core';
 import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types'
 import { Prev, Next } from './utils';
 import { Lens } from './Lens'
@@ -36,7 +36,7 @@ type ProperPath<Model, L extends ILens, I extends number> =
     [...LastPathItem<L['path'], I>, NextPathItem<Model>]
 
 type LastPathItem<P extends PathItem[], I extends number> =
-    I extends 0 ? [] :  [P[Prev<I>]];
+    I extends 0 ? [] :  Slice<P, 0, I>;
 
 type NextPathItem<Model> =
     readonly any[] extends Model ? number

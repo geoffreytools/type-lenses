@@ -135,6 +135,14 @@ test('Flat Lens type checking', t => [
         ['a', 'c']
     >(),
     t.equal<
+        Audit<['a', 'b', 'd'], { a: { b: {c: 1 } } }>,
+        ['a', 'b', 'c']
+    >(),
+    t.equal<
+        Audit<['a', 'b', 'c', 'e'], { a: { b: { c: { d: 1} } } }>,
+        ['a', 'b', 'c', 'd']
+    >(),
+    t.equal<
         Audit<['a', 'b'], { a: Map<string, unknown> }>,
         ['a', free.Map]
     >(),
