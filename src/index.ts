@@ -2,13 +2,13 @@ export { Get, GetMulti, $Get, $GetMulti } from './Get'
 // export { ReplaceMulti } from './ReplaceMulti'
 export { Replace, $Replace } from './Replace'
 export { Over, $Over } from './Over'
+export { FindPaths } from './FindPaths'
 export * from './placeholders'
 export { self, Output, QueryItem, Query, Param } from './types'
 export { free } from 'free-types-core';
 export { inferArgs } from 'free-types-core';
 
 import { Audit } from './Audit'
-import { Get } from './Get'
 import { Lens as CreateLens, $Lens } from './Lens';
 import { ILens, Query } from './types'
 

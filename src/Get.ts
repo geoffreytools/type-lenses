@@ -1,9 +1,8 @@
-import { Query, ILens } from './types'
-import { Next } from './utils';
+import { Query, ILens } from './types';
+import { Next, MapOver, _, _$Optional } from './utils';
 import { FollowPath, NOT_FOUND } from './Follow';
 import { Lens } from './Lens';
 import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types-core'
-import { MapOver, _$Optional, _ } from 'free-types/essential';
 
 export { Get, GetMulti, $Get, $GetMulti }
 

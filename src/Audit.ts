@@ -1,9 +1,8 @@
-import { TypesMap, Generic, unwrap, Type, B, Slice } from 'free-types-core';
-import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types'
-import { Prev, Next, Parameters } from './utils';
-import { Lens } from './Lens'
+import { unwrap, Type, B, Slice } from 'free-types-core';
+import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types';
+import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOver } from './utils';
+import { Lens } from './Lens';
 import { FollowPath, NOT_FOUND } from './Follow';
-import { MapOver } from 'free-types/essential/mappables/MapOver';
 
 export type Audit<
     Q extends Query,
@@ -49,14 +48,3 @@ type NextPathItem<Model> =
     : never
 
 type NumericArgs<T> = ToNumber<keyof T & `${number}`>
-
-type ToNumber<T> = T extends `${infer I extends number}` ? I : never
-
-type GenericFree = Exclude<
-    Generic<TypesMap[keyof TypesMap]>,
-    Fn  |  readonly unknown[] | Record<PropertyKey, unknown>
->;
-
-type SequenceTo<N extends number, I extends number = 0, R = never> =
-    I extends N ? R | I
-    : SequenceTo<N, Next<I>, R | I>

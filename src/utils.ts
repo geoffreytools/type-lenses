@@ -1,4 +1,22 @@
-export { Next, Prev, Last, IsAny } from 'free-types-core/dist/utils';
+import { TypesMap, Generic } from 'free-types-core';
+import { Next } from 'free-types-core/dist/utils';
+import { Fn } from './types'
+
+export { Next, Prev, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';
+export { MapOver } from 'free-types/essential/mappables/MapOver';
+export { _ } from 'free-types/essential/_partial';
+export { _$Optional} from 'free-types/essential/adapters/$Optional';
+
+export type GenericFree = Exclude<
+    Generic<TypesMap[keyof TypesMap]>,
+    Fn | readonly unknown[] | Record<PropertyKey, unknown>
+>;
+
+export type SequenceTo<N extends number, I extends number = 0, R = never> =
+    I extends N ? R | I
+    : SequenceTo<N, Next<I>, R | I>;
+
+export type ToNumber<T> = T extends `${infer I extends number}` ? I : never;
 
 export type Parameters<F, P = 
     F extends {

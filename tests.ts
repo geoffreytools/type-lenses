@@ -1,4 +1,4 @@
-import { apply, $Next } from 'free-types';
+import { apply, Type, A } from 'free-types-core';
 import { test, Context } from 'ts-spec';
 import {
     Lens,
@@ -14,10 +14,15 @@ import {
     $Replace,
     Over,
     $Over,
+    FindPaths,
     free,
     self,
     Query
 } from './src/';
+
+import { Next } from './src/utils';
+
+interface $Next extends Type<[number], number> { type: Next<A<this>> }
 
 import { Audit } from './src/Audit';
 
@@ -38,7 +43,19 @@ test('readme example', t => {
     return [
         found(t)<Get<FocusNeedle, Haystack>>(),
         t.equal<Replace<FocusNeedle, Haystack, 'Yiha!'>, YihaStack>(),
-        t.equal<Over<FocusNeedle, Haystack, free.Promise>, TweenStack>()
+        t.equal<Over<FocusNeedle, Haystack, free.Promise>, TweenStack>(),
+        t.equal<
+            Replace<FindPaths<Haystack, needle>, Haystack, 'Yiha!'>,
+            YihaStack
+        >(),
+        t.equal<
+            FindPaths<Haystack>, 
+            | [free.Map, 0]
+            | [free.Map, 1, "foo", 0, r]
+            | [free.Map, 1, "foo", 0, a, r]
+            | [free.Map, 1, "foo", 0, a, a]
+            | [free.Map, 1, "foo", 1]
+        >()
     ];
 })
 
@@ -384,3 +401,66 @@ test('$GetMulti produces a free type expecting Data', t => {
 
     return t.equal<Result, ['hello', 'world']>()
 })
+
+
+test('FindPaths', t =>  [
+    t.equal<
+        FindPaths<{ a: needle }, needle>,
+        ['a']
+    >(),
+    t.equal<
+        FindPaths<{ a: unknown }, unknown>,
+        ['a']
+    >(),
+    t.equal<
+        FindPaths<{ a: any }, any>,
+        ['a']
+    >(),
+    t.equal<
+        FindPaths<{ a: 1, b: needle }, needle>,
+        ['b']
+    >(),
+    t.equal<
+        FindPaths<{ a: any, b: needle }, needle>,
+        ['b']
+    >(),
+    t.equal<
+        FindPaths<{ a: any, b: { c: needle } }, needle>,
+        ['b', 'c']
+    >(),
+    t.equal<
+        FindPaths<[any, [needle]], needle>,
+        [1, 0]
+    >(),
+    t.equal<
+        FindPaths<Map<string, needle>, needle>,
+        [free.Map, 1]
+    >(),
+    t.equal<
+        FindPaths<Map<string, {a: needle}>, needle>,
+        [free.Map, 1, 'a']
+    >(),
+    t.equal<
+        FindPaths<(a: needle, b: number) => void, needle>,
+        [a]
+    >(),
+    t.equal<
+        FindPaths<() => needle, needle>,
+        [r]
+    >(),
+    t.equal<
+        FindPaths<(f: (a: needle, b: number) => void) => void, needle>,
+        [a, a]
+    >(),
+    t.equal<
+        FindPaths<() => { a: needle }, needle>,
+        [r, 'a']
+    >(),
+    t.equal<
+        FindPaths<
+            Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>,
+            needle
+        >,
+        [free.Map, 1, "foo", 0, a, Output]
+    >(),
+]);

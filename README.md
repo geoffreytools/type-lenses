@@ -52,16 +52,47 @@ It results in:
 Map<string, {foo: [(f: (arg: string) => 'Yiha!') => void, 'bar'] }>
 ```
 ### Map over
-Finally, `Over` lets us map over our `needle` with a free type:
+Similarily to `Replace`, `Over` lets us map over our type to replace `needle` with the result of applying it to a free type:
 
 ```typescript
+import { Over } from 'type-lenses';
+
 type PromiseStack = Over<FocusNeedle, Haystack, free.Promise>;
 ```
 It results in:
 ```typescript
 Map<string, {foo: [(f: (arg: string) => Promise<needle>) => void, 'bar'] }>
 ```
-You can define arbitrary free types including procedural ones. See the documentation.
+You can define arbitrary free types including procedural ones (see the documentation).
+
+### Find
+Finally, you can find a path if you know the `needle` you are looking for with `FindPaths`:
+
+```typescript
+import { FindPaths } from 'type-lenses';
+
+type NeedlePaths = FindPaths<Haystack, needle>;
+```
+It results in:
+```typescript
+[free.Map, 1, "foo", 0, Param<0>, Output]
+```
+- `Param<0>` and `Output` are aliases for `a` and `r`;
+- `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see documentation).
+
+`FindPaths` actually returns a union of all paths ending in `needle`. If you have no idea what to look for, you can omit the `needle` to get an enumeration of every possible path:
+```typescript
+type NeedlePaths = FindPaths<Haystack>;
+```
+It results in
+```typescript
+// the union is actually going to be shuffled though
+| [free.Map, 0]
+| [free.Map, 1, "foo", 0, Output]
+| [free.Map, 1, "foo", 0, Param<0>, Output]
+| [free.Map, 1, "foo", 0, Param<0>, Param<0>]
+| [free.Map, 1, "foo", 1]
+```
 
 # Documentation
 
@@ -204,7 +235,46 @@ Map over the parent type, replacing the queried piece of type with the result of
 |Haystack| The type you want to modify
 |$Type | A free type constructor
 
+You can defined your own free types as transformers:
+
+```typescript
+import { Type, A } from 'free-types'
+
+// We can define a free utility type
+interface $Exclaim extends Type<[string]> { type `${A<this>}!` }
+
+// Or a free type constructor from an existing type
+interface $Foo extends Type<[number]> { type: Foo<A<this>> }
+
+class Foo<T extends number> {
+    constructor(private value: T) { ... }
+}
+```
+
 See [free-types](https://github.com/geoffreytools/free-types) for more information.
+
+### `FindPaths`
+
+Return the union of every possible path leading to the `needle` (or every possible path if it is omitted).
+
+#### Syntax
+`FindPaths<T, Needle?>`
+
+|parameter| description|
+|-|-|
+|T| The type you want to probe
+|Needle| The piece of type you want selected paths to point to. It defaults to `self`, which selects every possible path.
+
+If you want `FindPaths` to be able to find your own free types, you must register them:
+
+```typescript
+declare module 'free-types' {
+    interface TypesMap { Foo: $Foo }
+}
+```
+
+See [free-types](https://github.com/geoffreytools/free-types) for more information.
+
 
 ### `$Get`, `$GetMulti`, `$Replace`, `$Over`
 Free versions of `Get`, `GetMulti`, `Replace` and `Over`.
