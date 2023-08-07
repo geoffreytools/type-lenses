@@ -1,10 +1,13 @@
 import { unwrap, Unwrapped } from "free-types-core";
 import { GenericFree, SequenceTo, ToNumber, Prev, Last, Init, IsUnknown, IsAny } from "./utils";
-import { Fn, Output, Param, self } from "./types";
+import { Fn, Output, Param, PathItem, self } from "./types";
+import { Get } from "./Get";
 
 export { FindPaths }
 
-type FindPaths<T, Needle = self> = FilterPath<GetPaths<T>, Needle>
+type FindPaths<T, Needle = self, From extends PathItem[] = []> =
+     From extends [] ? FilterPath<GetPaths<T>, Needle>
+     : [...From, ...FilterPath<GetPaths<Get<From, T>>, Needle>]
 
 type GetPaths<T> =
     IsAny<T> extends true ? [any]

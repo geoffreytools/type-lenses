@@ -471,4 +471,16 @@ test('FindPaths', t =>  [
         >,
         [free.Map, 1, "foo", 0, a, Output]
     >(),
+    t.equal<
+        FindPaths<Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>>, 
+        | [free.Map, 0]
+        | [free.Map, 1, "foo", 0, r]
+        | [free.Map, 1, "foo", 0, a, r]
+        | [free.Map, 1, "foo", 0, a, a]
+        | [free.Map, 1, "foo", 1]
+    >(),
+    t.equal<
+        FindPaths<Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>, self, [free.Map, 1, "foo", 0, a]>, 
+        [free.Map, 1, "foo", 0, a, r] | [free.Map, 1, "foo", 0, a, a]
+    >()
 ]);
