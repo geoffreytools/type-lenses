@@ -429,6 +429,14 @@ test('FindPaths', t =>  [
         ['b', 'c']
     >(),
     t.equal<
+        FindPaths<needle[], needle>,
+        [number]
+    >(),
+    t.equal<
+        FindPaths<{ a: needle }[], needle>,
+        [number, 'a']
+    >(),
+    t.equal<
         FindPaths<[any, [needle]], needle>,
         [1, 0]
     >(),

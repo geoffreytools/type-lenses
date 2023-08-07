@@ -9,7 +9,8 @@ type FindPaths<T, Needle = self> = FilterPath<GetPaths<T>, Needle>
 type GetPaths<T> =
     IsAny<T> extends true ? [any]
     : T extends readonly unknown[]
-        ? { [I in keyof T]: [ToNumber<I>, ...GetPaths<T[I]>] }[keyof T]
+        ? any[] extends T ? [number, ...GetPaths<T[number]>]
+        : { [I in keyof T]: [ToNumber<I>, ...GetPaths<T[I]>] }[keyof T]
     : T extends GenericFree
         ? GetFreePath<T>
     : T extends Fn ? [Output, ...GetPaths<ReturnType<T>>] | GetFnArgsPaths<T>
