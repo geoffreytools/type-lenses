@@ -80,7 +80,7 @@ It results in:
 - `Param<0>` and `Output` are aliases for `a` and `r`;
 - `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see documentation).
 
-`FindPaths` actually returns a union of all paths ending in `needle`. If you have no idea what to look for, you can omit the `needle` to get an enumeration of every possible path:
+`FindPaths` actually returns a union of all paths leading to `needle`. If you have no idea what to look for, you can omit the `needle` to get an enumeration of every possible path:
 ```typescript
 type NeedlePaths = FindPaths<Haystack>;
 ```
