@@ -99,6 +99,9 @@ It results in
 [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [Free utils](#get-getmulti-replace-over)
 
 ### `Lens`
+
+`Lens<Query, Model?>`
+
 You can create a lens by passing a `Query` to `Lens`.
 
 ```typescript
@@ -113,6 +116,16 @@ Composing lenses is as simple as wrapping them in a new `Lens`:
 ```typescript
 type C = Lens<[A, B]> // Lens<[1, 'a', 2, r]>
 ```
+
+`Lens` optionally takes a `Model` against which to perform type checking.
+
+```typescript
+type Haystack = Map<string, {foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
+type FocusNeedle = Lens<[free.Map, 1, 'bar', 0, a, r], Haystack>;
+//                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// [$Map, 1, "bar", 0, a, Output]' does not satisfy the constraint [$Map, 1, "foo"]
+```
+The Error message is a work in progress, but it is serviceable.
 
 ### Query
 
