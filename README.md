@@ -114,7 +114,7 @@ It results in
 
 # Documentation
 
-[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [Free utils](#get-getmulti-replace-over)
+[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
 
 ### `Lens`
 
