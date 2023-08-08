@@ -284,7 +284,7 @@ Map over the parent type, replacing the queried piece of type with the result of
 
 ### `FindPaths`
 
-Return the union of every possible path leading to the `needle` (or every possible path if it is omitted).
+Return the union of every possible path leading to the `needle`.
 
 #### Syntax
 `FindPaths<T, Needle?, From?>`
