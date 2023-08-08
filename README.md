@@ -293,7 +293,7 @@ Return the union of every possible path leading to the `needle`.
 |-|-|
 |T| The type you want to probe
 |Needle| The piece of type you want selected paths to point to. It defaults to `self`, which selects every possible path.
-|Needle| A path from which to start the search. It improves performance and helps exclude false positives.
+|From| A path from which to start the search. It improves performance and helps exclude false positives.
 
 
 ### `$Get`, `$GetMulti`, `$Replace`, `$Over`
