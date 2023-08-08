@@ -50,8 +50,13 @@ test('readme example', t => {
         >(),
         t.equal<
             FindPaths<Haystack>, 
+            | [free.Map]
             | [free.Map, 0]
+            | [free.Map, 1]
+            | [free.Map, 1, "foo"]
+            | [free.Map, 1, "foo", 0]
             | [free.Map, 1, "foo", 0, r]
+            | [free.Map, 1, "foo", 0, a]
             | [free.Map, 1, "foo", 0, a, r]
             | [free.Map, 1, "foo", 0, a, a]
             | [free.Map, 1, "foo", 1]
@@ -470,17 +475,41 @@ test('FindPaths', t =>  [
             needle
         >,
         [free.Map, 1, "foo", 0, a, Output]
-    >(),
-    t.equal<
-        FindPaths<Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>>, 
-        | [free.Map, 0]
-        | [free.Map, 1, "foo", 0, r]
-        | [free.Map, 1, "foo", 0, a, r]
-        | [free.Map, 1, "foo", 0, a, a]
-        | [free.Map, 1, "foo", 1]
-    >(),
-    t.equal<
-        FindPaths<Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>, self, [free.Map, 1, "foo", 0, a]>, 
-        [free.Map, 1, "foo", 0, a, r] | [free.Map, 1, "foo", 0, a, a]
     >()
 ]);
+
+test('FindPaths takes a From argument as starting point', t => {
+    type Haystack = Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
+
+    return t.equal<
+        FindPaths<Haystack, self, [free.Map, 1, "foo", 0, a]>, 
+        [free.Map, 1, "foo", 0, a, r] | [free.Map, 1, "foo", 0, a, a]
+    >()
+})
+
+test('FindPaths can find paths which are not leaves', t => [
+    t.equal<
+        FindPaths<{ a: { b: 'foo' } }>,
+        ['a'] | ['a', 'b']
+    >(),
+    t.equal<
+        FindPaths<[1, 2, [3, 4]]>,
+        [0] | [1] | [2] | [2, 0] | [2, 1]
+    >(),
+    t.equal<
+        FindPaths<Map<string, Set<number>>>,
+        | [free.Map]
+        | [free.Map, 0]
+        | [free.Map, 1]
+        | [free.Map, 1, free.Set]
+        | [free.Map, 1, free.Set, 0]
+    >(),
+    t.equal<
+        FindPaths<(f: (arg: string) => void) => [number]>,
+        | [a]
+        | [r]
+        | [r, 0]
+        | [a, a]
+        | [a, r]
+    >(),
+])
