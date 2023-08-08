@@ -65,7 +65,7 @@ Map<string, {foo: [(f: (arg: string) => Promise<needle>) => void, 'bar'] }>
 ```
 You can define arbitrary free types including procedural ones (see the documentation).
 
-### Find
+### Find paths
 Finally, you can find a path if you know the `needle` you are looking for with `FindPaths`:
 
 ```typescript
@@ -87,11 +87,29 @@ type NeedlePaths = FindPaths<Haystack>;
 It results in
 ```typescript
 // the union is actually going to be shuffled though
+| [free.Map]
 | [free.Map, 0]
+| [free.Map, 1]
+| [free.Map, 1, "foo"]
+| [free.Map, 1, "foo", 0]
 | [free.Map, 1, "foo", 0, Output]
+| [free.Map, 1, "foo", 0, Param<0>]
 | [free.Map, 1, "foo", 0, Param<0>, Output]
 | [free.Map, 1, "foo", 0, Param<0>, Param<0>]
 | [free.Map, 1, "foo", 1]
+```
+
+`FindPaths` also takes an optional path as third parameter which it uses as a starting point for the search:
+```typescript
+// `self` accepts any value
+type NeedlePaths = FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>;
+```
+It results in
+```typescript
+| [free.Map, 1, "foo", 0, Output]
+| [free.Map, 1, "foo", 0, Param<0>]
+| [free.Map, 1, "foo", 0, Param<0>, Output]
+| [free.Map, 1, "foo", 0, Param<0>, Param<0>]
 ```
 
 # Documentation
@@ -164,12 +182,12 @@ Path items can be one of the following types:
 <td>By default it refers to the haystack, but some utils enable providing a value for it.</td>
 </tr>
 <tr>
-<td><code>Type</code></td>
-<td>Focuses on the arguments list of a type for which <code>Type</code> is a free type constructor.</td>
+<td><code>$Type</code></td>
+<td>Focuses on the arguments list of a type for which <code>$Type</code> is a free type constructor.</td>
 </tr>
 </table>
 
-### `Type`
+### `$Type`
 
 In a nutshell:
 
@@ -198,8 +216,24 @@ type FocusNeedle = Lens<[$Foo, 0]>;
 
 type Needle = Get<FocusNeedle, Haystack>; // needle
 ```
+```typescript
+// We can also define a free utility type
+interface $Exclaim extends Type<[string]> { type `${A<this>}!` }
+
+type Exclamation = Over<['a'], { a: 'Hello' }, $Exclaim> // { a: "Hello!" }
+```
 
 `type-lenses` re-exports a [dozen](https://github.com/geoffreytools/free-types/blob/public/doc/Documentation.md#free) built-in free type constructors under the namespace `free`.
+
+If you want `FindPaths` to be able to find your own free types, you must register them:
+
+```typescript
+declare module 'free-types' {
+    interface TypesMap { Foo: $Foo }
+}
+```
+
+See [free-types](https://github.com/geoffreytools/free-types) for more information.
 
 
 ## Querying and modifying types
@@ -248,45 +282,18 @@ Map over the parent type, replacing the queried piece of type with the result of
 |Haystack| The type you want to modify
 |$Type | A free type constructor
 
-You can defined your own free types as transformers:
-
-```typescript
-import { Type, A } from 'free-types'
-
-// We can define a free utility type
-interface $Exclaim extends Type<[string]> { type `${A<this>}!` }
-
-// Or a free type constructor from an existing type
-interface $Foo extends Type<[number]> { type: Foo<A<this>> }
-
-class Foo<T extends number> {
-    constructor(private value: T) { ... }
-}
-```
-
-See [free-types](https://github.com/geoffreytools/free-types) for more information.
-
 ### `FindPaths`
 
 Return the union of every possible path leading to the `needle` (or every possible path if it is omitted).
 
 #### Syntax
-`FindPaths<T, Needle?>`
+`FindPaths<T, Needle?, From?>`
 
 |parameter| description|
 |-|-|
 |T| The type you want to probe
 |Needle| The piece of type you want selected paths to point to. It defaults to `self`, which selects every possible path.
-
-If you want `FindPaths` to be able to find your own free types, you must register them:
-
-```typescript
-declare module 'free-types' {
-    interface TypesMap { Foo: $Foo }
-}
-```
-
-See [free-types](https://github.com/geoffreytools/free-types) for more information.
+|Needle| A path from which to start the search. It improves performance and helps exclude false positives.
 
 
 ### `$Get`, `$GetMulti`, `$Replace`, `$Over`
@@ -299,4 +306,3 @@ import { apply } from 'free-types';
 type $NeedleSelector = $Get<Query>
 type Needle = apply<$NeedleSelector, [Haystack]>;
 ```
-See [free-types](https://github.com/geoffreytools/free-types) for more information.

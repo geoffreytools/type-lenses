@@ -60,6 +60,13 @@ test('readme example', t => {
             | [free.Map, 1, "foo", 0, a, r]
             | [free.Map, 1, "foo", 0, a, a]
             | [free.Map, 1, "foo", 1]
+        >(),
+        t.equal<
+            FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>, 
+            | [free.Map, 1, "foo", 0, r]
+            | [free.Map, 1, "foo", 0, a]
+            | [free.Map, 1, "foo", 0, a, r]
+            | [free.Map, 1, "foo", 0, a, a]
         >()
     ];
 })
