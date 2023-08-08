@@ -43,7 +43,3 @@ type FilterPath<T, Needle> =
         : Needle extends self ? Init<T>
         : [Last<T>] extends [Needle] ? IsAny<Last<T>> extends false ? Init<T> : never : never
     : never;
-
-type T = GetPaths<{ a: { b: 'foo' } }>
-
-type U = FindPaths<{a: { b: 'foo' } }, {b: any}>
