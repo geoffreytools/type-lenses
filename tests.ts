@@ -14,6 +14,7 @@ import {
     $Replace,
     Over,
     $Over,
+    FindPath,
     FindPaths,
     free,
     self,
@@ -519,4 +520,24 @@ test('FindPaths can find paths which are not leaves', t => [
         | [a, a]
         | [a, r]
     >(),
+])
+
+test('FindPath', t => [
+    t.equal<FindPath<needle[], needle>, [number]>(),
+    t.equal<FindPath<[a: needle, b: 42], needle>, [0]>(),
+    t.equal<FindPath<[a: [b: needle, c: 42]], needle>, [0, 0]>(),
+    
+    t.equal<FindPath<{ a: needle, b: 42 }, needle>, ['a']>(),
+    t.equal<FindPath<{ a: { b: needle, c: 42 } }, needle>, ['a', 'b']>(),
+
+    t.equal<FindPath<{ a: [b: needle, c: 42 ] }, needle>, ['a', 0]>(),
+    t.equal<FindPath<[{ a: needle, b: 42 }], needle>, [0, 'a']>(),
+])
+
+test('FindPath: stops at the first instance of Needle', t => [
+    t.equal<FindPath<[ a: [ c: [ d: 42 ] ], b: 2001 ], number>, [1]>(),
+    t.equal<FindPath<[ a: [ b: 2001, c: [ d: 42 ] ] ], number>, [0, 0]>(),
+
+    t.equal<FindPath<{ a: { c: { d: 42 } }, b: 2001 }, number>, ['b']>(),
+    t.equal<FindPath<{ a: { b: 2001, c: { d: 42 } } }, number>, ['a', 'b']>(),
 ])

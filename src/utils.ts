@@ -60,3 +60,13 @@ export type Parameters<F, P =
 
     : never
 > = P extends any ? unknown[] extends P ? never : P : never;
+
+export type PickUnionMember<
+    T,
+    HOFs = T extends any ? (a: () => T) => void : never,
+    Overloads = [HOFs] extends [(a: infer I) => any] ? I : never,
+> = Overloads extends () => (infer R) ? R : never;
+
+export type Union2Tuple<U, T = PickUnionMember<U>> =
+    [U] extends [never] ? []
+    : [...Union2Tuple<Exclude<U, T>>, T];

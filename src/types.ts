@@ -1,6 +1,6 @@
 import { Type } from 'free-types-core';
 
-export { self, Query, QueryItem, Param, Output, Key, PathItem, Fn, Indexable, Lens as ILens }
+export { self, Query, QueryItem, Param, Output, Key, PathItem, Fn, Indexable, Lens as ILens, NOT_FOUND }
 
 type PathItem = Param | Output | self | Key | Type;
 type Lens = { __type_lenses: 'lens', path: PathItem[] }
@@ -13,3 +13,5 @@ type self = { __type_lenses: 'self' };
 type Fn = (...args: any[]) => unknown
 type Indexable = { [k: Key]: any } & { readonly [Symbol.toStringTag]?: never };
 type Key = number | string | symbol;
+declare const NOT_FOUND: unique symbol;
+type NOT_FOUND = typeof NOT_FOUND;

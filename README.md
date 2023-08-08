@@ -66,12 +66,14 @@ Map<string, {foo: [(f: (arg: string) => Promise<needle>) => void, 'bar'] }>
 You can define arbitrary free types including procedural ones (see the documentation).
 
 ### Find paths
-Finally, you can find a path if you know the `needle` you are looking for with `FindPaths`:
+Finally, you can find paths with `FindPath` and `FindPaths`.
+
+The former is guaranteed to return a single path pointing to the `needle` you provide, stopping at the first instance it encounters.
 
 ```typescript
-import { FindPaths } from 'type-lenses';
+import { FindPath } from 'type-lenses';
 
-type NeedlePaths = FindPaths<Haystack, needle>;
+type PathToNeedle = FindPath<Haystack, needle>;
 ```
 It results in:
 ```typescript
@@ -80,9 +82,13 @@ It results in:
 - `Param<0>` and `Output` are aliases for `a` and `r`;
 - `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see documentation).
 
-`FindPaths` actually returns a union of all paths leading to `needle`. If you have no idea what to look for, you can omit the `needle` to get an enumeration of every possible path:
+> See documentation for details about disambiguation when multiple `needle` can be found in `Haystack`. This behaviour is not subject to change and can be relied upon.
+
+The latter returns a union of all paths leading to `needle`, or every possible path if `needle` is omitted, or `self`.
 ```typescript
-type NeedlePaths = FindPaths<Haystack>;
+import { FindPaths } from 'type-lenses';
+
+type EveryPath = FindPaths<Haystack>;
 ```
 It results in
 ```typescript
@@ -99,10 +105,9 @@ It results in
 | [free.Map, 1, "foo", 1]
 ```
 
-`FindPaths` also takes an optional path as third parameter which it uses as a starting point for the search:
+Both `FindPath` and `FindPaths` take an optional path as third parameter which they use as a starting point for the search. This can be used for disambiguation, performance, or convenience (if you use `FindPaths` to probe an type for example):
 ```typescript
-// `self` accepts any value
-type NeedlePaths = FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>;
+type FilteredPaths = FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>;
 ```
 It results in
 ```typescript
@@ -282,9 +287,24 @@ Map over the parent type, replacing the queried piece of type with the result of
 |Haystack| The type you want to modify
 |$Type | A free type constructor
 
+### `FindPath` (WIP — not in the build)
+
+Return the first path leading to the `Needle`.
+
+The traversal is breadth-first, so expect values closest to the root to trigger the early return, then when an array or arguments list is encountered, elements are searched in the same ordering as they are listed. When an object is encountered, properties are searched at random.
+
+#### Syntax
+`FindPath<T, Needle, From?>`
+
+|parameter| description|
+|-|-|
+|T| The type you want to probe
+|Needle| The piece of type you want selected paths to point to
+|From| A path from which to start the search. It improves performance and helps exclude false positives.
+
 ### `FindPaths`
 
-Return the union of every possible path leading to the `needle`.
+Return the union of every possible path leading to the `Needle`.
 
 #### Syntax
 `FindPaths<T, Needle?, From?>`

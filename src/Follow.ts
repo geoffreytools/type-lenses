@@ -1,11 +1,8 @@
-import { self, Param, Output, Key, PathItem, Fn } from './types'
+import { self, Param, Output, Key, PathItem, Fn, NOT_FOUND } from './types'
 import { Type, inferArgs, Generic, apply } from 'free-types-core';
 import { IsAny, Parameters } from './utils';
 
 export { FollowPath, NOT_FOUND }
-
-declare const NOT_FOUND: unique symbol;
-type NOT_FOUND = typeof NOT_FOUND;
 
 type FollowPath<I extends PathItem, Data, Self> =
     I extends Output ? Data extends Fn ? ReturnType<Data> : NOT_FOUND

@@ -3,6 +3,7 @@ export { Get, GetMulti, $Get, $GetMulti } from './Get'
 export { Replace, $Replace } from './Replace'
 export { Over, $Over } from './Over'
 export { FindPaths } from './FindPaths'
+export { FindPath } from './FindPath'
 export * from './placeholders'
 export { self, Output, QueryItem, Query, Param } from './types'
 export { free } from 'free-types-core';
