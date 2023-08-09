@@ -418,6 +418,12 @@ test('$GetMulti produces a free type expecting Data', t => {
 
 
 test('FindPaths', t =>  [
+    t.equal<FindPaths<needle, needle>, [self]>(),
+    t.equal<FindPaths<unknown, unknown>, [self]>(),
+    t.equal<FindPaths<1, needle>, never>(),
+    t.equal<FindPaths<any, needle>, never>(),
+    t.equal<FindPaths<never, never>, [self]>(),
+    t.equal<FindPaths<never, needle>, never>(),
     t.equal<
         FindPaths<{ a: needle }, needle>,
         ['a']
@@ -534,9 +540,6 @@ test('FindPaths can find paths which are not leaves', t => [
 ])
 
 test('FindPath', t => [
-    t.equal<FindPath<unknown, unknown>, [self]>(),
-    t.equal<FindPath<[unknown], unknown>, [0]>(),
-    t.equal<FindPath<needle, unknown>, never>(),
     t.equal<FindPath<needle, needle>, [self]>(),
     t.equal<FindPath<needle[], needle>, [number]>(),
     t.equal<FindPath<1[], needle>, never>(),
