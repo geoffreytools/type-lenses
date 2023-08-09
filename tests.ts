@@ -16,6 +16,7 @@ import {
     $Over,
     FindPath,
     FindPaths,
+    FindPathMulti,
     free,
     self,
     Query
@@ -450,6 +451,14 @@ test('FindPaths', t =>  [
         [number, 'a']
     >(),
     t.equal<
+        FindPaths<[[needle]], needle>,
+        [0, 0]
+    >(),
+    t.equal<
+        FindPaths<[[needle], any], needle>,
+        [0, 0]
+    >(),
+    t.equal<
         FindPaths<[any, [needle]], needle>,
         [1, 0]
     >(),
@@ -482,18 +491,20 @@ test('FindPaths', t =>  [
             Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>,
             needle
         >,
-        [free.Map, 1, "foo", 0, a, Output]
+        [free.Map, 1, "foo", 0, a, r]
     >()
 ]);
 
-test('FindPaths takes a From argument as starting point', t => {
-    type Haystack = Map<string, { foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
-
-    return t.equal<
-        FindPaths<Haystack, self, [free.Map, 1, "foo", 0, a]>, 
-        [free.Map, 1, "foo", 0, a, r] | [free.Map, 1, "foo", 0, a, a]
+test('FindPaths takes a From argument as starting point', t =>  [
+    t.equal<
+        FindPaths<{ a: needle, b: [needle] }, needle, ['b']>, 
+        ['b', 0]
+    >(),
+    t.equal<
+        FindPathMulti<{ a: needle, b: [needle] }, needle, ['b']>,
+        [['b', 0]]
     >()
-})
+])
 
 test('FindPaths can find paths which are not leaves', t => [
     t.equal<
@@ -523,15 +534,33 @@ test('FindPaths can find paths which are not leaves', t => [
 ])
 
 test('FindPath', t => [
+    t.equal<FindPath<unknown, unknown>, [self]>(),
+    t.equal<FindPath<[unknown], unknown>, [0]>(),
+    t.equal<FindPath<needle, unknown>, never>(),
+    t.equal<FindPath<needle, needle>, [self]>(),
     t.equal<FindPath<needle[], needle>, [number]>(),
+    t.equal<FindPath<1[], needle>, never>(),
     t.equal<FindPath<[a: needle, b: 42], needle>, [0]>(),
     t.equal<FindPath<[a: [b: needle, c: 42]], needle>, [0, 0]>(),
+    t.equal<FindPath<[a: 1, b: [c: needle]], needle>, [1, 0]>(),
     
     t.equal<FindPath<{ a: needle, b: 42 }, needle>, ['a']>(),
+    t.equal<FindPath<{ a: 42, b: { c: needle } }, needle>, ['b', 'c']>(),
     t.equal<FindPath<{ a: { b: needle, c: 42 } }, needle>, ['a', 'b']>(),
 
     t.equal<FindPath<{ a: [b: needle, c: 42 ] }, needle>, ['a', 0]>(),
     t.equal<FindPath<[{ a: needle, b: 42 }], needle>, [0, 'a']>(),
+    
+    t.equal<FindPath<Map<string, needle>, needle>, [free.Map, 1]>(),
+    t.equal<FindPath<Map<string, Set<needle>>, needle>, [free.Map, 1, free.Set, 0]>(),
+
+    t.equal<FindPath<() => needle, needle>, [r]>(),
+    t.equal<FindPath<() => () => needle, needle>, [r, r]>(),
+    t.equal<FindPath<() => [needle], needle>, [r, 0]>(),
+    
+    t.equal<FindPath<(a: needle) => void, needle>, [a]>(),
+    t.equal<FindPath<(f: (a: needle) => void) => void, needle>, [a, a]>(),
+    t.equal<FindPath<(f: (a: [needle]) => void) => void, needle>, [a, a, 0]>(),
 ])
 
 test('FindPath: stops at the first instance of Needle', t => [
@@ -540,4 +569,92 @@ test('FindPath: stops at the first instance of Needle', t => [
 
     t.equal<FindPath<{ a: { c: { d: 42 } }, b: 2001 }, number>, ['b']>(),
     t.equal<FindPath<{ a: { b: 2001, c: { d: 42 } } }, number>, ['a', 'b']>(),
+
+    t.equal<FindPath<Triple<string, needle, Map<string, needle>>, needle>, [$Triple, 1]>(),
+
+    t.equal<FindPath<(a: needle, b: needle) => needle, needle>, [a]>(),
+    t.equal<FindPath<(f: (a: needle) => needle, b: needle) => needle, needle>, [b]>(),
+    t.equal<FindPath<(a: needle) => needle, needle>, [a]>(),
+    t.equal<FindPath<(a: string) => needle, needle>, [r]>(),
+
+])
+
+test('FindPath: deal with `any`', t => [
+    t.equal<FindPath<any, any>, [self]>(),
+    t.equal<FindPath<any[], any>, [number]>(),
+    t.equal<FindPath<needle, any>, never>(),
+    t.equal<FindPath<any, needle>, never>(),
+    t.equal<FindPath<[1, any, 3], any>, [1]>(),
+    t.equal<FindPath<[1, any, 3], needle>, never>(),
+    t.equal<FindPath<any[], any>, [number]>(),
+])
+
+test('FindPath: deal with `never`', t => [
+    t.equal<FindPath<never, never>, [self]>(),
+    t.equal<FindPath<needle, never>, never>(),
+    t.equal<FindPath<never, needle>, never>(),
+    t.equal<FindPath<[1, never, 3], never>, [1]>(),
+    t.equal<FindPath<[1, never, 3], needle>, never>(),
+    t.equal<FindPath<never[], never>, [number]>(),
+    t.equal<FindPath<{ a: never }, number>, never>(),
+    t.equal<FindPath<{ a: never }, never>, ['a']>(),
+])
+
+test('FindPath: deal with unknown', t => [
+    t.equal<FindPath<unknown, unknown>, [self]>(),
+    t.equal<FindPath<[unknown], unknown>, [0]>(),
+    t.equal<FindPath<needle, unknown>, never>(),
+])
+
+class Triple<A, B, C> {
+    constructor(private a: A, private b: B, private c: C) {}
+}
+
+interface $Triple extends Type<3> {
+    type: Triple<this[0], this[1], this[2]>
+}
+
+declare module 'free-types-core' {
+    export interface TypesMap {
+        Triple: $Triple
+    }
+}
+
+test('FindPathMulti', t => [
+    t.equal<FindPathMulti<[1, 2, 3], number>, [[0], [1], [2]]>(),
+    t.equal<
+        FindPathMulti<[1, [10, 20], 300], number>,
+        [[0], [2], [1, 0], [1, 1]]
+    >(),
+    t.equal<FindPathMulti<[1, 'foo', 3], number>, [[0], [2]]>(),
+    t.equal<FindPathMulti<{ a: 1, b: 2 }, number>, [['a'], ['b']]>(),
+    t.equal<FindPathMulti<{ a: 1, b: 2, c: '!' }, number>, [['a'], ['b']]>(),
+    t.equal<FindPathMulti<(a: 1, b: 2) => void, number>, [[a], [b]]>(),
+    t.equal<FindPathMulti<() => [needle, needle], needle>, [[r, 0], [r, 1]]>(),
+    t.equal<
+        FindPathMulti<(f: (a: 1) => void, b: 2) => void, number>,
+        [[b], [a, a]]
+    >(),
+    t.equal<
+        FindPathMulti<(f: (a: [1]) => void, b: 2) => void, number>,
+        [[b], [a, a, 0]]
+    >(),
+    t.equal<FindPathMulti<Map<1, 2>, number>, [[free.Map, 0], [free.Map, 1]]>(),
+    t.equal<
+        FindPathMulti<Map<0, Map<1, 2>>, number>,
+        [[free.Map, 0], [free.Map, 1, free.Map, 0], [free.Map, 1, free.Map, 1]]
+    >()
+])
+
+
+test('FindPathMulti Limit', t => [
+    t.equal<FindPathMulti<[1, 2, 3], number, [], 2>, [[0], [1]]>(),
+    t.equal<
+        FindPathMulti<[1, [10, 20], 300], number, [], 3>,
+        [[0], [2], [1, 0]]
+    >(),
+    t.equal<
+        FindPathMulti<Map<0, Map<1, 2>>, number, [], 2>,
+        [[free.Map, 0], [free.Map, 1, free.Map, 0]]
+    >()
 ])

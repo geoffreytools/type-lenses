@@ -63,12 +63,12 @@ It results in:
 ```typescript
 Map<string, {foo: [(f: (arg: string) => Promise<needle>) => void, 'bar'] }>
 ```
-You can define arbitrary free types including procedural ones (see the documentation).
+You can define arbitrary free types including procedural ones (see [doc/$Type](#type) for more information).
 
 ### Find paths
 Finally, you can find paths with `FindPath` and `FindPaths`.
 
-The former is guaranteed to return a single path pointing to the `needle` you provide, stopping at the first instance it encounters.
+The former is guaranteed to return a single path pointing to `needle`:
 
 ```typescript
 import { FindPath } from 'type-lenses';
@@ -80,11 +80,10 @@ It results in:
 [free.Map, 1, "foo", 0, Param<0>, Output]
 ```
 - `Param<0>` and `Output` are aliases for `a` and `r`;
-- `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see documentation).
+- `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see [doc/$Type](#type) for more information);
+- The behaviour for singling out a match is documented in [doc/FindPath](#findpath).
 
-> See documentation for details about disambiguation when multiple `needle` can be found in `Haystack`. This behaviour is not subject to change and can be relied upon.
-
-The latter returns a union of all paths leading to `needle`, or every possible path if `needle` is omitted, or `self`.
+The latter returns a union of every possible path, or every path leading to `needle` if it is provided.
 ```typescript
 import { FindPaths } from 'type-lenses';
 
@@ -105,7 +104,7 @@ It results in
 | [free.Map, 1, "foo", 1]
 ```
 
-Both `FindPath` and `FindPaths` take an optional path as third parameter which they use as a starting point for the search. This can be used for disambiguation, performance, or convenience (if you use `FindPaths` to probe an type for example):
+Both `FindPath` and `FindPaths` take an optional path as third parameter which they use as a starting point for the search:
 ```typescript
 type FilteredPaths = FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>;
 ```
@@ -119,7 +118,7 @@ It results in
 
 # Documentation
 
-[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
+[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath](#findpath) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
 
 ### `Lens`
 
@@ -287,11 +286,16 @@ Map over the parent type, replacing the queried piece of type with the result of
 |Haystack| The type you want to modify
 |$Type | A free type constructor
 
-### `FindPath` (WIP — not in the build)
+### `FindPath`
 
-Return the first path leading to the `Needle`.
+Return a single path leading to the `Needle`, or `never` if none is found.
 
-The traversal is breadth-first, so expect values closest to the root to trigger the early return, then when an array or arguments list is encountered, elements are searched in the same ordering as they are listed. When an object is encountered, properties are searched at random.
+The search stops at the first match and behaves thusly :
+
+- Values closer to the root take precedence over deep values;
+- Tuples and arguments lists are searched in the same order as they list their elements;
+- In function signatures, parameters are searched before the return type;
+- Cconsider object properties are searched at random.
 
 #### Syntax
 `FindPath<T, Needle, From?>`
@@ -304,7 +308,7 @@ The traversal is breadth-first, so expect values closest to the root to trigger 
 
 ### `FindPaths`
 
-Return the union of every possible path leading to the `Needle`.
+Return the union of every possible path leading to the `Needle`, or `never` if none is found.
 
 #### Syntax
 `FindPaths<T, Needle?, From?>`

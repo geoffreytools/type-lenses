@@ -1,11 +1,13 @@
 import { TypesMap, Generic } from 'free-types-core';
-import { Next } from 'free-types-core/dist/utils';
+import { IsAny, Next } from 'free-types-core/dist/utils';
 import { Fn } from './types'
 
-export { Next, Prev, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';
+export { Next, Prev, Subtract, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';
 export { MapOver } from 'free-types/essential/mappables/MapOver';
 export { _ } from 'free-types/essential/_partial';
 export { _$Optional} from 'free-types/essential/adapters/$Optional';
+
+export type GetOrElse<T, U, E> = T extends U ? T : E;
 
 export type GenericFree = Exclude<
     Generic<TypesMap[keyof TypesMap]>,
