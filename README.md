@@ -432,7 +432,7 @@ The search behaves like so:
 - Values closer to the root take precedence (breadth-first search);
 - Tuples and arguments lists are searched in the same order as they list their elements;
 - Object properties are searched **at random**;
-- Parameters are searched before the return type in function signatures.
+- In function signatures, parameters are searched before the return type.
 
 The ordering when using `self` as needle is not specified. Paths leading to base types come in the order you would expect, but intermediary nodes come in the order that was most convenient for me.
 
@@ -464,7 +464,7 @@ type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, ['b']>
 `Limit` enables you to ignore matches which are of no interest to you. It also improves performance:
 
 ```typescript
-//         provide an empty `From` to access this parameter  vv
+//     provide an empty `From` to access this parameter  vv
 type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, [], 1>
 // type PathsSubset = [['a', 0]]
 ```
