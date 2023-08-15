@@ -1,9 +1,5 @@
-import { GetOrElse } from "./utils";
 import { PathItem } from "./types";
-import { FindPathMulti } from "./FindPathMulti";
+import { FindPaths } from "./FindPaths";
 
-export type FindPath<T, Needle, From extends PathItem[] = []> = GetOrElse<
-    FindPathMulti<T, Needle, From, 1>[0],
-    [any, ...any],
-    never
->
+export type FindPath<T, Needle, From extends PathItem[] = []> =
+    Extract<FindPaths<T, Needle, From, 1>[0], [any, ...any[]]>;
