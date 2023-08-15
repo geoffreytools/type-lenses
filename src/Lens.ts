@@ -15,7 +15,7 @@ interface $Lens extends Type<[Query], ILens> {
     type: this[0] extends Query ? Lens<this[0]> : ILens
 }
 
-type Flatten<T extends unknown[], I extends number = 0, R extends unknown[] = []> =
+type Flatten<T extends readonly unknown[], I extends number = 0, R extends unknown[] = []> =
     I extends T['length'] ? R
     : T[I] extends PathItem
     ? Flatten<T, Next<I>, [...R, T[I]]>
