@@ -147,7 +147,7 @@ type EveryPath = FindPaths<Haystack>;
 
 # Documentation
 
-[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath(s)](#findpaths) | [Free utils](#get-getmulti-replace-over)
+[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindReplace](#findreplace) | [FindPath(s)](#findpaths) | [Free utils](#get-getmulti-replace-over)
 
 ### Type checking
 
