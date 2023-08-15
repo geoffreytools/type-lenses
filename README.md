@@ -87,7 +87,7 @@ type Foo = FindReplace<{ a: 1, b: 2 }, number, free.Promise>;
 import { $ReplaceCallback } from 'type-lenses';
 import { Optional, Last, A, B } from 'free-types';
 
-// or one of your design taking the Path as second parameter
+// or one of your design (don't freak out, see the doc)
 interface $Callback extends $ReplaceCallback<number> {
     type: this['prop'] extends 'a' ? Add<10, A<this>>
         : this['prop'] extends 'b' ? Promise<A<this>>
@@ -394,7 +394,7 @@ If you use a replace callback, its first parameter must extend your `Needle`.
 
 #### Replace callback
 
-If you want to define a custom replace callback, you are advised to import the `$ReplaceCallback` contract. It takes a parameter which lets you specify the type of the `Needle`. 
+If you want to define a custom replace callback, you can extend `$ReplaceCallback<T>` which is really `Type<[T, Path?]>` where `T` is your `Needle`: 
 
 ```typescript
 import { $ReplaceCallback } from 'type-lenses';
@@ -411,9 +411,14 @@ type WithCallback = FindReplace<{ a: 1, b: 2 }, number, $Callback>;
 // type WithCallback = { a: 11, b: Promise<2> }
 ```
 
-The types `Optional`, `A` and `B` let you safely index `this` while defusing type constraints. Here `Add` expects a `number`, which is satisfied by `A<this>` because `$Callback` extends `$ReplaceCallback<number>`.
+The types `Optional`, `A` and `B` let you safely index `this` to extract the arguments passed to `$Callback`, while defusing type constraints.
 
-Don't hesitate to use fields in the interface for clarity. Here I create a `prop` field using `Last` to select the last `PathItem` in the `Path`, which is passed as a second argument to the replace callback.
+- `Add` expects a `number`, which is satisfied by `A<this>`;
+- `Last` expects a tuple, which is satisfied by `Optional<B, this>`.
+
+More information about these helpers in free-types' [guide](https://github.com/geoffreytools/free-types/blob/public/doc/Guide.md#helpers).
+
+Here I also created a `prop` field for clarity, using `Last` to select the last `PathItem` in the `Path`.
 
 ### `FindPath(s)`
 
