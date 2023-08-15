@@ -121,7 +121,7 @@ type PathToNeedle = FindPath<Haystack, needle>;
 ```
 - `Param<0>` and `Output` are aliases for `a` and `r`;
 - `free.Map` is a built-in free type, but you can also register your own so they can be inferred (see [doc/$Type](#type));
-- The behaviour for singling out a match is documented in [doc/FindPath](#findpath).
+- The behaviour for singling out a match is documented in [doc/FindPath(s)](#findpaths).
 
 The latter returns a tuple of every path leading to `needle`. If it is `self` (the default), it returns every possible path, which can be useful for exploring a type.
 ```typescript
@@ -147,7 +147,7 @@ type EveryPath = FindPaths<Haystack>;
 
 # Documentation
 
-[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath](#findpath) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
+[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath(s)](#findpaths) | [Free utils](#get-getmulti-replace-over)
 
 ### Type checking
 
