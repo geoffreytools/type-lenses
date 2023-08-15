@@ -1,5 +1,5 @@
 export * from './types';
-export { $FnParams } from './FnParams';
+export { $Fn } from './Fn';
 export { $Struct } from './Struct';
 export { $Tuple } from './Tuple';
 export { $Free } from './Free';

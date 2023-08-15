@@ -1,27 +1,27 @@
-import { Checked, A, B } from "free-types-core"
+import { A } from "free-types-core"
 import { $Accessor, $Iterator } from "./types"
 
 export { $Tuple, $GetValue, $Done }
 
-interface $Tuple extends $Iterator {
-    value: $GetValue
+interface $Tuple<T extends readonly unknown[]> extends $Iterator {
+    value: $GetValue<T>
     key: $GetKey
     path: $GetPath
-    done: $Done
+    done: $Done<T>
 }
 
-interface $GetValue extends $Accessor {
-    type: Checked<A, this>[B<this>]
+interface $GetValue<T extends readonly unknown[]> extends $Accessor {
+    type: T[A<this>]
 }
 
 interface $GetKey extends $Accessor {
-    type: B<this>
+    type: A<this>
 }
 
 interface $GetPath extends $Accessor {
-    type: [B<this>]
+    type: [A<this>]
 }
 
-interface $Done extends $Accessor {
-    type: this[1] extends A<this>['length'] ? true : false
+interface $Done<T extends readonly unknown[]> extends $Accessor {
+    type: A<this> extends T['length'] ? true : false
 }

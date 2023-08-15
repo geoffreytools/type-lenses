@@ -1,27 +1,30 @@
-import { B } from "free-types-core";
+import { A } from "free-types-core";
+import { Union2Tuple } from "../utils";
 import { $Accessor, $Iterator } from "./types"
 
 export { $Struct }
 
-interface $Struct<Keys extends unknown[]> extends $Iterator {
-    value: $GetValue<Keys>
+interface $Struct<T, Keys extends (keyof T)[] = GetKeys<T>> extends $Iterator {
+    value: $GetValue<T, Keys>
     key: $GetKey<Keys>
     path: $GetPath<Keys>
     done: $Done<Keys>
 }
 
-interface $GetValue<Keys extends unknown[]> extends $Accessor {
-    type: this[0][Keys[B<this>] & keyof this[0]]
+type GetKeys<T> = Extract<Union2Tuple<keyof T>, (keyof T)[]>
+
+interface $GetValue<T, Keys extends (keyof T)[]> extends $Accessor {
+    type: T[Keys[A<this>]]
 }
 
 interface $GetKey<Keys extends unknown[]> extends $Accessor {
-    type: Keys[B<this>]
+    type: Keys[A<this>]
 }
 
 interface $GetPath<Keys extends unknown[]> extends $Accessor {
-    type: [Keys[B<this>]]
+    type: [Keys[A<this>]]
 }
 
 interface $Done<Keys extends unknown[]> extends $Accessor {
-    type: this[1] extends Keys['length'] ? true : false
+    type: A<this> extends Keys['length'] ? true : false
 }

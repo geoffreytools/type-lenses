@@ -1,5 +1,5 @@
 import { TypesMap, Generic } from 'free-types-core';
-import { IsAny, Next } from 'free-types-core/dist/utils';
+import { Next } from 'free-types-core/dist/utils';
 import { Fn } from './types'
 
 export { Next, Prev, Subtract, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';

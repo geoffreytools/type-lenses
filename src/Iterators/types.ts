@@ -13,4 +13,4 @@ type $Iterator = {
     done: $Accessor
 };
 
-type $Accessor<R = unknown> = Type<[Iterable, number], R>;
+type $Accessor<R = unknown> = Type<[number], R>;
