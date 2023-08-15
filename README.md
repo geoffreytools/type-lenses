@@ -40,85 +40,123 @@ It results in:
 ```
 needle
 ```
-### Replace
-We can replace `needle` by what we want with `Replace`:
+### Replace a piece of type
+We can replace `needle` by any compatible type with `Replace`:
 ```typescript
 import { Replace } from 'type-lenses';
 
 type YihaStack = Replace<FocusNeedle, Haystack, 'Yiha!'>;
 ```
-It results in:
 ```typescript
+// result:
 Map<string, {foo: [(f: (arg: string) => 'Yiha!') => void, 'bar'] }>
 ```
-### Map over
-Similarily to `Replace`, `Over` lets us map over our type to replace `needle` with the result of applying it to a free type:
+### Map over a type
+Similarily to `Replace`, `Over` lets us replace `needle` with the result of applying it to a compatible ready-made or custom free type:
 
 ```typescript
 import { Over } from 'type-lenses';
 
 type PromiseStack = Over<FocusNeedle, Haystack, free.Promise>;
 ```
-It results in:
 ```typescript
+// result:
 Map<string, {foo: [(f: (arg: string) => Promise<needle>) => void, 'bar'] }>
 ```
-You can define arbitrary free types including procedural ones (see [doc/$Type](#type) for more information).
+
+### Find and replace
+
+`FindReplace` removes the need to construct a path, as long as we know what `needle` to target:
+
+```typescript
+import { FindReplace } from 'type-lenses';
+
+type YihaStack = FindReplace<Haystack, needle, ['Yiha!']>;
+```
+```typescript
+// result:
+Map<string, {foo: [(f: (arg: string) => 'Yiha!') => void, 'bar'] }>
+```
+
+It also accepts a replace callback of type `Type<[Needle, Path?]>` if you need to run arbitrary logic:
+
+```typescript
+// any unary free type can work
+type Foo = FindReplace<{ a: 1, b: 2 }, number, free.Promise>;
+
+import { $ReplaceCallback } from 'type-lenses';
+import { Optional, Last, A, B } from 'free-types';
+
+// or one of your design exposing the Path
+interface $Callback extends $ReplaceCallback<number> {
+    type: this['prop'] extends 'a' ? Add<10, A<this>>
+        : this['prop'] extends 'b' ? Promise<A<this>>
+        : never
+    prop: Last<Optional<B, this>>
+}
+
+type Bar = FindReplace<{ a: 1, b: 2 }, number, $Callback>;
+```
+```typescript
+// result:
+type Foo = { a: Promise<1>, b: Promise<2> }
+type Bar = { a: 11, b: Promise<2> }
+```
+
+`FindReplace` gives control over the search, the number of matches and the way they are replaced, with some limitations to keep in mind. Make sure to read the documentation.
 
 ### Find paths
-Finally, you can find paths with `FindPath` and `FindPaths`.
+Finally, we can find paths with `FindPath` and `FindPaths`.
 
-The former is guaranteed to return a single path pointing to `needle`:
+The former is guaranteed to return a single path pointing to `needle`, or `never`:
 
 ```typescript
 import { FindPath } from 'type-lenses';
 
 type PathToNeedle = FindPath<Haystack, needle>;
 ```
-It results in:
 ```typescript
+// result:
 [free.Map, 1, "foo", 0, Param<0>, Output]
 ```
 - `Param<0>` and `Output` are aliases for `a` and `r`;
-- `free.Map` is obviously a member of the `free` namespace but it could also be a custom free type you registered (see [doc/$Type](#type) for more information);
+- `free.Map` is a built-in free type, but you can also register your own so they can be inferred (see [doc/$Type](#type));
 - The behaviour for singling out a match is documented in [doc/FindPath](#findpath).
 
-The latter returns a union of every possible path, or every path leading to `needle` if it is provided.
+The latter returns a tuple of every path leading to `needle`. If it is `self` (the default), it returns every possible path, which can be useful for exploring a type.
 ```typescript
 import { FindPaths } from 'type-lenses';
 
 type EveryPath = FindPaths<Haystack>;
 ```
-It results in
 ```typescript
-// the union is actually going to be shuffled though
-| [free.Map]
-| [free.Map, 0]
-| [free.Map, 1]
-| [free.Map, 1, "foo"]
-| [free.Map, 1, "foo", 0]
-| [free.Map, 1, "foo", 0, Output]
-| [free.Map, 1, "foo", 0, Param<0>]
-| [free.Map, 1, "foo", 0, Param<0>, Output]
-| [free.Map, 1, "foo", 0, Param<0>, Param<0>]
-| [free.Map, 1, "foo", 1]
+// result:
+[[free.Map],
+[free.Map, 0],
+[free.Map, 1],
+[free.Map, 1, "foo"],
+[free.Map, 1, "foo", 1],
+[free.Map, 1, "foo", 0],
+[free.Map, 1, "foo", 0, r],
+[free.Map, 1, "foo", 0, a],
+[free.Map, 1, "foo", 0, a, a],
+[free.Map, 1, "foo", 0, a, r]]
 ```
 
-Both `FindPath` and `FindPaths` take an optional path as third parameter which they use as a starting point for the search:
-```typescript
-type FilteredPaths = FindPaths<Haystack, self, [free.Map, 1, "foo", 0]>;
-```
-It results in
-```typescript
-| [free.Map, 1, "foo", 0, Output]
-| [free.Map, 1, "foo", 0, Param<0>]
-| [free.Map, 1, "foo", 0, Param<0>, Output]
-| [free.Map, 1, "foo", 0, Param<0>, Param<0>]
-```
+`FindPath(s)` give control over the search and the number of matches, with some limitations to keep in mind. Make sure to read the documentation.
 
 # Documentation
 
-[Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath](#findpath) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
+[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindPath](#findpath) | [FindPaths](#findpaths) | [Free utils](#get-getmulti-replace-over)
+
+### Type checking
+
+The library type checks your inputs in various ways, but these checks never involve the `Haystack`.
+
+This is because the type checker fails to check generics, even with adequate type constraints. Since working with a generic `Haystack` is a very common use case for lenses, I chose to ignore this check for ease of use.
+
+If you need to check your query, you can do so with a `Lens`.
+
 
 ### `Lens`
 
@@ -265,60 +303,171 @@ The same as `Get`, but takes a tuple of `Query` and returns a tuple of results.
 Replace the queried piece of type with a new value in the parent type, or return the parent type unchanged if the query failed.
 
 #### Syntax
-`Replace<Query, Haystack, Value>`
+`Replace<Query, Haystack, Value, Constraint?>`
 
 |parameter| description|
 |-|-|
 |Query| a `Query`
 |Haystack| The type you want to modify
 |Value | Any type you want to replace the needle with
+|Constraint | A mean of turning off type checking in higher order scenarios
+
+#### Type checking
+`Value` is type checked against the `Query`:
+```typescript
+type Failing = Replace<[free.WeakSet, 0], WeakSet<{ foo: number }>, number>
+//                      ---------------                             ~~~~~~
+type Failing = Replace<[free.WeakSet], WeakSet<{ foo: number }>, [number]>
+//                      ------------                             ~~~~~~~~
+// Type 'number' does not satisfy the constraint 'object'
+```
+
+If `Query` is generic, you will have to opt-out from type checking by setting `Constraint` to `any`:
+
+```typescript
+type Generic<Q> = Replace<Q, WeakSet<{ foo: number }>, object, any>
+//                                                             ---
+```
+
 
 ### `Over`
 
 Map over the parent type, replacing the queried piece of type with the result of applying it to the provided free type. Return the parent type unchanged if the query failed.
 
 #### Syntax
-`Over<Query, Haystack, $Type>`
+`Over<Query, Haystack, $Type, Constraint?>`
 
 |parameter| description|
 |-|-|
 |Query| a `Query`
 |Haystack| The type you want to modify
 |$Type | A free type constructor
+|Constraint | A mean of turning off type checking in higher order scenarios
 
-### `FindPath`
+#### Type checking
+The return type of `$Type` is fully type checked against the `Query`, however its parameters are only checked loosely for relatedness, because they also depend on the `Haystack` which is purposely excluded from type checking:
+```typescript
+type Failing = Over<[free.WeakSet, 0], WeakSet<{foo: number}>, $Next>
+//                                                             ~~~~~
+// Type '$Next' does not satisfy the constraint 'Type<[Unrelated<number, object>]>'
 
-Return a single path leading to the `Needle`, or `never` if none is found.
+type NotFailing = Over<[free.Set, 0], Set<'hello'>, $Next>
+//           will blow up with no error   -------   -----
+```
 
-The search stops at the first match and behaves thusly :
+If `Query` is generic, you will have to opt-out from type checking by setting `Constraint` to `any`:
 
-- Values closer to the root take precedence over deep values;
-- Tuples and arguments lists are searched in the same order as they list their elements;
-- In function signatures, parameters are searched before the return type;
-- Cconsider object properties are searched at random.
+```typescript
+type Generic<Q> = Over<Q, Set<1>, $Next, any>
+//                                       ---
+```
+### `FindReplace`
+
+Find a `Needle` in the parent type and replace matches with new values, or return the parent type unchanged if there is no match.
+
+The search behaves like [`FindPaths`](#findpaths).
+
+If there are more matches than you specified replace values, the last replace value is used to replace the supernumerary matches:
+
+```typescript
+type WithValues = FindReplace<[1, 2, 3], number, [42, 2001]>;
+// type WithValues = [42, 2001, 2001]
+```
+
+> **Warning**
+> Do not expect object properties to be found and replaced in a specific order. If you need to find/replace multiple values in the same object, use a replace callback instead.
 
 #### Syntax
-`FindPath<T, Needle, From?>`
+`FindReplace<Haystack, Needle, Values | $Type, From?, Limit?>`
 
 |parameter| description|
 |-|-|
-|T| The type you want to probe
-|Needle| The piece of type you want selected paths to point to
-|From| A path from which to start the search. It improves performance and helps exclude false positives.
+|Haystack| The type you want to modify
+|Needle| The piece of type you want to search
+|Values \| $Type| A tuple of values to replace the matches with, or a replace callback
+|From| A path from which to start the search.
+|Limit| The maximum number of matches to find and replace
 
-### `FindPaths`
+#### Type checking
 
-Return the union of every possible path leading to the `Needle`, or `never` if none is found.
+If you use a replace callback, its first parameter must extend your `Needle`.
+
+#### Replace callback
+
+If you want to define a custom replace callback, you are advised to import the `$ReplaceCallback` contract. It takes a parameter which lets you specify the type of the `Needle`. 
+
+```typescript
+import { $ReplaceCallback } from 'type-lenses';
+import { Optional, Last, A, B } from 'free-types';
+
+interface $Callback extends $ReplaceCallback<number> {
+    type: this['prop'] extends 'a' ? Add<10, A<this>>
+        : this['prop'] extends 'b' ? Promise<A<this>>
+        : never
+    prop: Last<Optional<B, this>>
+}
+
+type WithCallback = FindReplace<{ a: 1, b: 2 }, number, $Callback>;
+// type WithCallback = { a: 11, b: Promise<2> }
+```
+
+The types `Optional`, `A` and `B` let you safely index `this` while defusing type constraints. Here `Add` expects a `number`, which is satisfied by `A<this>` because `$Callback` extends `$ReplaceCallback<number>`.
+
+Don't hesitate to use fields in the interface for clarity. Here I create a `prop` field using `Last` to select the last `PathItem` in the `Path`, which is passed as a second argument to the replace callback.
+
+### `FindPath(s)`
+
+`FindPath` is literally defined like so:
+
+```typescript
+type FindPath<T, Needle, From extends PathItem[] = []> =
+    Extract<FindPaths<T, Needle, From, 1>[0], [any, ...any[]]>;
+```
+
+
+`FindPaths` returns a tuple of every path leading to the `Needle`, or every possible path when `Needle` is `self` (the default).
+
+The search behaves like so:
+
+- Values closer to the root take precedence (breadth-first search);
+- Tuples and arguments lists are searched in the same order as they list their elements;
+- Object properties are searched **at random**;
+- Parameters are searched before the return type in function signatures.
+
+The ordering when using `self` as needle is not specified. Paths leading to base types come in the order you would expect, but intermediary nodes come in the order that was most convenient for me.
+
+```typescript
+type BaseType = string | number | boolean | symbol | undefined | void;
+```
 
 #### Syntax
-`FindPaths<T, Needle?, From?>`
+`FindPaths<T, Needle?, From?, Limit?>`
 
 |parameter| description|
 |-|-|
 |T| The type you want to probe
 |Needle| The piece of type you want selected paths to point to. It defaults to `self`, which selects every possible path.
-|From| A path from which to start the search. It improves performance and helps exclude false positives.
+|From| A path from which to start the search.
+|Limit| The maximum number of matches to return
 
+#### From
+
+`From` enables you to specify which path should be searched for potential matches. It can be used for disambiguation or to improve performance:
+
+```typescript
+type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, ['b']>
+// type PathsSubset = [['b', 0]]
+```
+
+#### Limit
+
+`Limit` enables you to ignore matches which are of no interest to you. It also improves performance:
+
+```typescript
+//         provide an empty `From` to access this parameter  vv
+type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, [], 1>
+// type PathsSubset = [['a', 0]]
+```
 
 ### `$Get`, `$GetMulti`, `$Replace`, `$Over`
 Free versions of `Get`, `GetMulti`, `Replace` and `Over`.
