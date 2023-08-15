@@ -87,7 +87,7 @@ type Foo = FindReplace<{ a: 1, b: 2 }, number, free.Promise>;
 import { $ReplaceCallback } from 'type-lenses';
 import { Optional, Last, A, B } from 'free-types';
 
-// or one of your design exposing the Path
+// or one of your design taking the Path as second parameter
 interface $Callback extends $ReplaceCallback<number> {
     type: this['prop'] extends 'a' ? Add<10, A<this>>
         : this['prop'] extends 'b' ? Promise<A<this>>
@@ -375,7 +375,7 @@ type WithValues = FindReplace<[1, 2, 3], number, [42, 2001]>;
 ```
 
 > **Warning**
-> Do not expect object properties to be found and replaced in a specific order. If you need to find/replace multiple values in the same object, use a replace callback instead.
+> Do not expect object properties to be found and replaced in a specific order. If you need to find/replace multiple values in the same object, use a replace callback instead of a tuple of values.
 
 #### Syntax
 `FindReplace<Haystack, Needle, Values | $Type, From?, Limit?>`
