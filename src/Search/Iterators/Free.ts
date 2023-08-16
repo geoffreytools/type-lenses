@@ -1,4 +1,4 @@
-import { unwrap, Unwrapped, Type, Checked, A, B } from "free-types-core"
+import { unwrap, Unwrapped, Type, A } from "free-types-core"
 import { $Accessor, $Iterator } from "./types"
 
 export { $Free }

@@ -1,5 +1,5 @@
 import { A } from "free-types-core";
-import { Union2Tuple } from "../utils";
+import { Union2Tuple } from "../../utils";
 import { $Accessor, $Iterator } from "./types"
 
 export { $Struct }

@@ -1,8 +1,8 @@
 import { A } from "free-types-core";
-import { Fn, Output, Param } from "../types";
+import { Fn, Output, Param } from "../../types";
 import { $Accessor, $Iterator } from "./types"
 import { $Done, $GetValue } from "./Tuple";
-import { Parameters, Prev } from "../utils";
+import { Parameters, Prev } from "../../utils";
 
 export { $Fn };
 
