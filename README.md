@@ -300,7 +300,7 @@ The same as `Get`, but takes a tuple of `Query` and returns a tuple of results.
 
 ### `Replace`
 
-Replace the queried piece of type with a new value in the parent type, or return the parent type unchanged if the query failed.
+Replace the queried piece of type with a new value in the parent type, or return the parent type unchanged if the query is `never` or doesn't match anything.
 
 #### Syntax
 `Replace<Query, Haystack, Value, Constraint?>`

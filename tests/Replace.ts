@@ -26,6 +26,9 @@ test('Replace: return the input unchanged when needle is not found', t => [
     t.equal<Haystack, Replace<[free.Map, 1, 'foo', 2], Haystack, 'X'>>(),
 ])
 
+test('Replace: return the input unchanged when the query is `never`', t => [
+    t.equal<Haystack, Replace<never, Haystack, 'X'>>()
+])
 
 test('Bare Replace object', t => [
     t.equal<Replace<'a', { a: 1, b: 2 }, 'foo'>, {a: 'foo', b: 2 }>()

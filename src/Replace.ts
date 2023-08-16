@@ -8,10 +8,11 @@ import { FollowPath, NOT_FOUND } from './Follow';
 export { Replace, $Replace };
 
 type Replace<Q extends Query, Data, V extends Constraint, Constraint = ValidValue<Q>> =
-    _Replace<Lens<Q>, Data, V>
+    [Q] extends [never] ? Data : _Replace<Lens<Q>, Data, V>
 
 type ValidValue<Q extends Query, Path extends unknown[] = Lens<Q>['path']> =
-    Path extends [...any[], infer $T extends Type] ? $T['constraints']
+    [Q] extends [never] ? unknown
+    : Path extends [...any[], infer $T extends Type] ? $T['constraints']
     : Path extends [...any[], infer $T extends Type, infer N extends number] ? $T['constraints'][N]
     : unknown 
 
