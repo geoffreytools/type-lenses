@@ -432,14 +432,14 @@ type FindPath<T, Needle, From extends PathItem[] = []> =
 
 `FindPaths` returns a tuple of every path leading to the `Needle`, or every possible path when `Needle` is `self` (the default).
 
-The search behaves like so:
+The search results are ordered according to the following rules, ranked by precedence:
 
-- Values closer to the root take precedence (breadth-first search);
-- Tuples and arguments lists are searched in the same order as they list their elements;
-- Object properties are searched **at random**;
-- In function signatures, parameters are searched before the return type.
-
-The ordering when using `self` as needle is not specified. Paths leading to base types come in the order you would expect, but intermediary nodes come in the order that was most convenient for me.
+1) Matches closer to the root are listed first (breadth-first search);
+1) Matches honour the ordering of tuples and function arguments lists;
+1) Matches **do not** honour the ordering of object properties;
+1) In function signatures, matched parameters are listed before any matched return type;
+1) the needles `any`, `never` and `unknown` match `any`, `never` and `unknown` respectively (use `self` to  match every path);
+1) When the needle is `self`, the ordering of paths which do not lead to a `BaseType` (a leaf) is unspecified.
 
 ```typescript
 type BaseType = string | number | boolean | symbol | undefined | void;
