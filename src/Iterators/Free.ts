@@ -5,17 +5,12 @@ export { $Free }
 
 interface $Free<T, U extends Unwrapped = unwrap<T>> extends $Iterator {
     value: $GetValue<U['args']>
-    key: $GetKey
     path: $GetPath<U['type']>
     done: $Done<U['args']>
 }
 
 interface $GetValue<Args extends unknown[]> extends $Accessor {
     type: Args[A<this>]
-}
-
-interface $GetKey extends $Accessor {
-    type: A<this>
 }
 
 interface $GetPath<$T extends Type> extends $Accessor {

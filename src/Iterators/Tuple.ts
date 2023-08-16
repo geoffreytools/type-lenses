@@ -5,17 +5,12 @@ export { $Tuple, $GetValue, $Done }
 
 interface $Tuple<T extends readonly unknown[]> extends $Iterator {
     value: $GetValue<T>
-    key: $GetKey
     path: $GetPath
     done: $Done<T>
 }
 
 interface $GetValue<T extends readonly unknown[]> extends $Accessor {
     type: T[A<this>]
-}
-
-interface $GetKey extends $Accessor {
-    type: A<this>
 }
 
 interface $GetPath extends $Accessor {

@@ -6,7 +6,6 @@ export { $Struct }
 
 interface $Struct<T, Keys extends (keyof T)[] = GetKeys<T>> extends $Iterator {
     value: $GetValue<T, Keys>
-    key: $GetKey<Keys>
     path: $GetPath<Keys>
     done: $Done<Keys>
 }
@@ -15,10 +14,6 @@ type GetKeys<T> = Extract<Union2Tuple<keyof T>, (keyof T)[]>
 
 interface $GetValue<T, Keys extends (keyof T)[]> extends $Accessor {
     type: T[Keys[A<this>]]
-}
-
-interface $GetKey<Keys extends unknown[]> extends $Accessor {
-    type: Keys[A<this>]
 }
 
 interface $GetPath<Keys extends unknown[]> extends $Accessor {

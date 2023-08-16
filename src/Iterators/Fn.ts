@@ -8,13 +8,8 @@ export { $Fn };
 
 interface $Fn<T extends Fn, P extends unknown[] = [...Parameters<T>, ReturnType<T>]> extends $Iterator {
     value: $GetValue<P>
-    key: $GetKey<Prev<P['length']>>
     path: $GetPath<Prev<P['length']>>
     done: $Done<P>
-}
-
-interface $GetKey<Last extends number> extends $Accessor {
-    type: A<this> extends Last ? Output : Param<A<this>>
 }
 
 interface $GetPath<Last extends number> extends $Accessor {

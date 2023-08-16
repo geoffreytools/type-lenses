@@ -7,6 +7,8 @@ export { MapOver } from 'free-types/essential/mappables/MapOver';
 export { _ } from 'free-types/essential/_partial';
 export { _$Optional} from 'free-types/essential/adapters/$Optional';
 
+export type IsArray<T> = any[] extends T ? true : never[] extends T ? true : false;
+
 export type GetOrElse<T, U, E> = T extends U ? T : E;
 
 export type GenericFree = Exclude<

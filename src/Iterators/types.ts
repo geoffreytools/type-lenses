@@ -1,14 +1,9 @@
 import { Type } from "free-types-core"
 
-export { Iterable, $Iterator, $Accessor }
-
-type Iterable = 
-    | readonly unknown[]
-    | { [k: PropertyKey]: unknown };
+export { $Iterator, $Accessor }
 
 type $Iterator = {
     value: $Accessor,
-    key: $Accessor,
     path: $Accessor<unknown[]>,
     done: $Accessor
 };
