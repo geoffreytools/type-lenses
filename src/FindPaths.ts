@@ -11,14 +11,16 @@ type FindPaths<
     Needle = self,
     From extends PathItem[] = [],
     Limit extends number = number
-> = From extends []
-    ? GetPaths<T, Needle, Limit> extends infer P
-        extends unknown[][] ? FormatSelf<P> : []
-    : GetPaths<Get<From, T>, Needle, Limit> extends infer P
-        extends unknown[][] 
-        ? P extends [] ? From : FormatSelf<{
-            [K in keyof P]: [...From, ...P[K]]
-        }> : []
+> = [T] extends [T]
+        ? From extends []
+        ? GetPaths<T, Needle, Limit> extends infer P
+            extends unknown[][] ? FormatSelf<P> : []
+        : GetPaths<Get<From, T>, Needle, Limit> extends infer P
+            extends unknown[][] 
+            ? P extends [] ? From : FormatSelf<{
+                [K in keyof P]: [...From, ...P[K]]
+            }> : []
+    : never
 
 type GetPaths<T, Needle, Limit extends number, Acc extends unknown[][] = []> = 
     Limit extends 0 | never ? Acc
