@@ -1,3 +1,4 @@
 node_modules
 traceDir
 dist
+ts-trace
