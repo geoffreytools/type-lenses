@@ -1,6 +1,5 @@
 import { test, Context } from 'ts-spec';
-import { Lens, a, b, r, Output, Get, Replace, free, self, Query } from '../src/';
-import { Audit } from '../src/Audit';
+import { Lens, a, b, r, Output, Get, Replace, free, self, QueryItem, Audit } from '../src/';
 
 test('r', t => [
     t.equal<r, Output>(),
@@ -50,7 +49,7 @@ test('laws: recency', t => {
     return t.equal<Get<FocusName, Replace<FocusName, Replace<FocusName, User, 'bar'>, 'baz'>>, 'baz'>()
 })
 
-const OK = <T extends string>(t: Context<T>) => t.equal<Query>();
+const OK = <T extends string>(t: Context<T>) => t.equal<readonly QueryItem[]>();
 
 test('Flat Lens type checking', t => [
     OK(t)<Audit<['a'], { a: [1, 2, 3] }>>(),
@@ -124,7 +123,7 @@ test('Flat Lens type checking', t => [
 ])
 
 test('Nested Lens type checking', t => [
-    OK(t)<Audit<Lens<['a', 0]>, { a: [1, 2, 3] }>>(),
+    t.equal<QueryItem, Audit<Lens<['a', 0]>, { a: [1, 2, 3] }>>(),
     OK(t)<Audit<[Lens<['a', 0]>], { a: [1, 2, 3] }>>(),
     OK(t)<Audit<[Lens<'a'>, Lens<0>], { a: [1, 2, 3] }>>(),
 
@@ -155,3 +154,7 @@ test('Nested Lens type checking', t => [
         Lens<['a' , 0 | 1 | 2]>
     >(),
 ]);
+
+test('The audit is open-ended when the error is not the last query item', t => [
+    t.equal<Audit<['h', 'b'], { a: { b: 1 } }>, ['a', ...QueryItem[]]>()
+])

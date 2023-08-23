@@ -11,7 +11,8 @@ export type Audit<
     L extends ILens = Lens<Q>,
     F = FollowPath<L['path'][I], Model, Model>
 > = F extends NOT_FOUND ? HandleError<Model, Q, L, I>
-    : Next<I> extends L['path']['length'] ? Query
+    : Next<I> extends L['path']['length']
+    ? Q extends readonly unknown[] ? readonly QueryItem[] : QueryItem
     : Audit<Q, F, Next<I>, L>;
 
 type HandleError<
@@ -31,10 +32,13 @@ interface $WrapIfLens<Q extends readonly QueryItem[]> extends Type<2> {
     constraints: [QueryItem, number]
 }
 
-type ProperPath<Model, L extends ILens, I extends number, N = NextPathItem<Model>> =
+type ProperPath<Model, L extends ILens, I extends number, N extends QueryItem = NextPathItem<Model>> =
     [N] extends [never]
     ? LastPathItem<L['path'], I>
-    : [...LastPathItem<L['path'], I>, NextPathItem<Model>]
+    : [...LastPathItem<L['path'], I>, ...Rest<L, I, N>]
+
+type Rest<L extends ILens, I extends number, N extends QueryItem> =
+    Next<I> extends L['path']['length'] ? [N] : [N, ...QueryItem[]];
 
 type LastPathItem<P extends Path, I extends number> =
     I extends 0 ? [] :  Slice<P, 0, I>;

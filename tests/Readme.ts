@@ -1,5 +1,5 @@
 import { test } from 'ts-spec';
-import { Lens, a, r, Get, Replace, Over, FindPaths, free, self, FindReplace } from '../src/';
+import { Lens, a, r, Get, Replace, Over, FindPaths, free, self, FindReplace, Audit } from '../src/';
 
 declare const needle: unique symbol;
 type needle = typeof needle;
@@ -37,4 +37,27 @@ test('readme example', t => [
         [free.Map, 1, "foo", 0, a, a],
         [free.Map, 1, "foo", 0, a, r]
     ]>()
+])
+
+declare const foo: <
+    Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj, _?: Check) => Path;
+
+// compiles
+const bar = <
+    Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj) =>
+    foo<Path, Obj, Check>(path, obj)
+
+// compiles
+const baz = <P extends readonly string[]>(path: P, obj: object) =>
+    foo(path, obj, null as any)
+
+test('type information is not lost', t => [
+    t.equal(bar(['a'] as const, { a: 42 }), ['a'] as const),
+    t.equal(baz(['a'] as const, { a: 42 }), ['a'] as const)
 ])

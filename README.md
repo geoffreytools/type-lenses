@@ -106,7 +106,7 @@ type Bar = { a: 11, b: Promise<2> }
 `FindReplace` gives control over the search, the number of matches and the way they are replaced, with some limitations to keep in mind. Make sure to read the documentation.
 
 ### Find paths
-Finally, we can find paths with `FindPath` and `FindPaths`.
+We can find paths with `FindPath` and `FindPaths`.
 
 The former is guaranteed to return a single path pointing to `needle`, or `never`:
 
@@ -145,9 +145,24 @@ type EveryPath = FindPaths<Haystack>;
 
 `FindPath(s)` give control over the search and the number of matches, with some limitations to keep in mind. Make sure to read the documentation.
 
+### Audit queries
+
+Finally, we can type check a query, typically in a function:
+
+```typescript
+declare const foo: <
+    const Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj) => void;
+
+foo(['q', 'b'], { a: { b: 42 }})
+//   ~~~ Type "q" is not assignable to type "a"
+```
+
 # Documentation
 
-[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindReplace](#findreplace) | [FindPath(s)](#findpaths) | [Free utils](#get-getmulti-replace-over)
+[Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindReplace](#findreplace) | [FindPath(s)](#findpaths) | [Audit](#audit) | [Free utils](#get-getmulti-replace-over)
 
 ### Type checking
 
@@ -183,9 +198,10 @@ type C = Lens<[A, B]> // Lens<[1, 'a', 2, r]>
 type Haystack = Map<string, {foo: [(f: (arg: string) => needle) => void, 'bar'] }>;
 type FocusNeedle = Lens<[free.Map, 1, 'bar', 0, a, r], Haystack>;
 //                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// [$Map, 1, "bar", 0, a, Output]' does not satisfy the constraint [$Map, 1, "foo"]
+// Type '[$Map, 1, "bar", 0, a, Output]' does not satisfy the constraint '[$Map, 1, "foo", ...QueryItem[]]'.
+//  Type at position 2 in source is not compatible with type at position 2 in target.
+//    Type '"bar"' is not assignable to type '"foo"'
 ```
-The Error message is a work in progress, but it is serviceable.
 
 ### Query
 
@@ -474,6 +490,59 @@ type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, [], 1>
 // type PathsSubset = [['a', 0]]
 ```
 
+### `Audit`
+
+`Audit` is the type being used internally to type check `Lens`, but it can be used with functions as well.
+
+#### Syntax
+`Audit<Query, Model>`
+
+|parameter| description|
+|-|-|
+|Query| The `Query` you want to type check
+|Model| The type that should to be traversable by the `Query`
+
+#### Generic Query
+
+Be mindful that type-checking the query will make your function unusable in higher order scenarios.
+
+```typescript
+declare const foo: <
+    const Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj) => void;
+
+const bar = <
+    const Path extends readonly string[],
+    Obj extends object
+>(path: Path, obj: Obj) => foo(path, obj)
+//              cryptic error  ~~~~
+```
+An obvious workaround is to check the input in `bar` and pass the check to `foo` as a type parameter:
+```typescript
+const bar = <
+    const Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj) =>
+    foo<Path, Obj, Check>(path, obj)
+```
+
+Alternatively, you could make type checking optional:
+```typescript
+/** pass `any` to `_` in order to disable type-checking*/
+declare const foo: <
+    const Path extends readonly string[] & Check,
+    Obj extends object,
+    Check = Audit<Path, Obj>
+>(path: Path, obj: Obj, _?: Check) => void;
+//                      ---------
+
+const bar = (path: readonly string[], obj: object) =>
+    foo(path, { a: { b: null }}, null as any)
+//                               -----------
+```
 ### `$Get`, `$GetMulti`, `$Replace`, `$Over`
 Free versions of `Get`, `GetMulti`, `Replace` and `Over`.
 

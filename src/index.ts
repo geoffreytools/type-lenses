@@ -9,7 +9,7 @@ export * from './placeholders'
 export { self, Output, QueryItem, Query, Path, Param } from './types'
 export { free } from 'free-types-core';
 export { inferArgs } from 'free-types-core';
-
+export { Audit } from './Audit';
 import { Audit } from './Audit'
 import { Lens as CreateLens, $Lens } from './Lens';
 import { ILens, Query } from './types'
