@@ -425,7 +425,7 @@ Here I also created a `prop` field for clarity, using `Last` to select the last 
 `FindPath` is literally defined like so:
 
 ```typescript
-type FindPath<T, Needle, From extends PathItem[] = []> =
+type FindPath<T, Needle, From extends Path = []> =
     Extract<FindPaths<T, Needle, From, 1>[0], [any, ...any[]]>;
 ```
 

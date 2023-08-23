@@ -51,6 +51,10 @@ test('tuple Get: tuple, object', t =>  [
     found(t)<Get<['a', 1], { a: [1, needle], b: 2 }>>(),
 ]);
 
+test('readonly tuple Get', t =>  [
+    found(t)<Get<readonly ['a', 1], { a: [1, needle], b: 2 }>>(),
+]);
+
 test('path Get: tuple, object', t => [
     found(t)<Get<Lens<[0]>, [needle, 2, 3]>>(),
     found(t)<Get<Lens<['a']>, { a: needle, b: 2 }>>(),

@@ -5,10 +5,10 @@ export { self, Query, QueryItem, Param, Output, Key, PathItem, Path, Fn, Indexab
 type BaseType = string | number | boolean | symbol | undefined | void ;
 
 type PathItem = Param | Output | self | Key | Type;
-type Lens = { __type_lenses: 'lens', path: PathItem[] }
+type Lens = { __type_lenses: 'lens', path: Path }
 type QueryItem = PathItem | Lens;
-type Path = PathItem[]
-type Query = QueryItem | QueryItem[];
+type Path = readonly PathItem[]
+type Query = QueryItem | readonly QueryItem[];
 type Param<K extends number=number> = { __type_lenses: 'param', key: K };
 type Output = { __type_lenses: 'output' };
 

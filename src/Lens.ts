@@ -8,7 +8,7 @@ export { Lens, $Lens }
 type Lens<Q> =
     Q extends ILens ? Q
     : Q extends PathItem ? { __type_lenses: 'lens', path: [Q] }
-    : Q extends QueryItem[] ? { __type_lenses: 'lens', path: Flatten<Q> }
+    : Q extends readonly QueryItem[] ? { __type_lenses: 'lens', path: Flatten<Q> }
     : never ;
 
 interface $Lens extends Type<[Query], ILens> {

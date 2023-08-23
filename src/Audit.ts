@@ -1,5 +1,5 @@
 import { unwrap, Type, B, Slice } from 'free-types-core';
-import { Fn, Param, Output, Query, ILens, PathItem, QueryItem } from './types';
+import { Fn, Param, Output, Query, ILens, Path, QueryItem } from './types';
 import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOver } from './utils';
 import { Lens } from './Lens';
 import { FollowPath, NOT_FOUND } from './Follow';
@@ -19,14 +19,14 @@ type HandleError<
     Q extends Query,
     L extends ILens,
     I extends number,
-    R extends QueryItem[] = ProperPath<Model, L, I>
+    R extends readonly QueryItem[] = ProperPath<Model, L, I>
 > = Q extends ILens ? Lens<R>
     : Q extends [ILens] ? [Lens<R>]
-    : Q extends QueryItem[] ? MapOver<R, $WrapIfLens<Q>>
+    : Q extends readonly QueryItem[] ? MapOver<R, $WrapIfLens<Q>>
     : Q extends QueryItem ? R[0]
     : R
 
-interface $WrapIfLens<Q extends QueryItem[]> extends Type<2> {
+interface $WrapIfLens<Q extends readonly QueryItem[]> extends Type<2> {
     type: Q[B<this>] extends ILens ? Lens<this[0]> : this[0]
     constraints: [QueryItem, number]
 }
@@ -36,7 +36,7 @@ type ProperPath<Model, L extends ILens, I extends number, N = NextPathItem<Model
     ? LastPathItem<L['path'], I>
     : [...LastPathItem<L['path'], I>, NextPathItem<Model>]
 
-type LastPathItem<P extends PathItem[], I extends number> =
+type LastPathItem<P extends Path, I extends number> =
     I extends 0 ? [] :  Slice<P, 0, I>;
 
 type NextPathItem<Model> =

@@ -11,7 +11,7 @@ type Over<Q extends Query, Data, V extends Constraint, Constraint = ValidTransfo
     _Over<Lens<Q>, Data, Extract<V, Type>>
 
 
-type ValidTransform<Q extends Query, $V, Path extends unknown[] = Lens<Q>['path']> =
+type ValidTransform<Q extends Query, $V, Path extends readonly unknown[] = Lens<Q>['path']> =
     $V extends Type ?
         Path extends [...any[], infer $T extends Type]
         ? RelatedTo<$T['constraints'], $V['constraints']> extends true

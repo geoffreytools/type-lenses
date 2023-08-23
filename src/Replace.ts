@@ -10,7 +10,7 @@ export { Replace, $Replace };
 type Replace<Q extends Query, Data, V extends Constraint, Constraint = ValidValue<Q>> =
     [Q] extends [never] ? Data : _Replace<Lens<Q>, Data, V>
 
-type ValidValue<Q extends Query, Path extends unknown[] = Lens<Q>['path']> =
+type ValidValue<Q extends Query, Path extends readonly unknown[] = Lens<Q>['path']> =
     [Q] extends [never] ? unknown
     : Path extends [...any[], infer $T extends Type] ? $T['constraints']
     : Path extends [...any[], infer $T extends Type, infer N extends number] ? $T['constraints'][N]

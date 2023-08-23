@@ -1,4 +1,4 @@
-import { Query, Param, Output, PathItem, ILens } from './types';
+import { Query, Param, Output, PathItem, Path, ILens } from './types';
 import { Lens } from './Lens';
 
 export { r, a, b, c, d, e, f, g, h, i, j };
@@ -17,6 +17,6 @@ type j = Param<9>;
 type r<P extends Query | never = never> =
     [P] extends [never] ? Output
     : P extends PathItem ? Lens<[P, Output]>
-    : P extends PathItem[] ? Lens<[...P, Output]>
+    : P extends Path ? Lens<[...P, Output]>
     : P extends ILens ? Lens<[...P['path'], Output]>
     : never;

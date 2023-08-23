@@ -1,5 +1,5 @@
 import { GenericFree, IsAny, GetOrElse, IsArray } from "./utils";
-import { Fn, NOT_FOUND, PathItem, self } from "./types";
+import { Fn, NOT_FOUND, Path, self } from "./types";
 import { Get } from "./Get";
 import { apply, Checked, Lossy, At } from "free-types-core";
 import { $Iterator, $Struct, $Tuple, $Array, $Fn, $Free } from "./Search/Iterators";
@@ -12,7 +12,7 @@ export { FindPaths}
 type FindPaths<
     T,
     Needle = self,
-    From extends PathItem[] = [],
+    From extends Path = [],
     Limit extends number = number,
     $Search extends $SearchMode = SelectSearchMode<Needle>
 > = [T] extends [T]
