@@ -5,7 +5,8 @@ import { IsAny, Parameters } from './utils';
 export { FollowPath, NOT_FOUND }
 
 type FollowPath<I extends PathItem, Data, Self> =
-    I extends Output ? Data extends Fn ? ReturnType<Data> : NOT_FOUND
+    undefined extends I ? NOT_FOUND
+    : I extends Output ? Data extends Fn ? ReturnType<Data> : NOT_FOUND
     : I extends Param ? Data extends Fn ? IfDefined<Parameters<Data>[I['key']]> : NOT_FOUND
     : I extends Key ?
         Data extends ReadonlyArray<unknown>
