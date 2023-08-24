@@ -49,7 +49,7 @@ test('laws: recency', t => {
     return t.equal<Get<FocusName, Replace<FocusName, Replace<FocusName, User, 'bar'>, 'baz'>>, 'baz'>()
 })
 
-const OK = <T extends string>(t: Context<T>) => t.equal<readonly QueryItem[]>();
+const OK = <T extends string>(t: Context<T>) => t.equal<QueryItem[]>();
 
 test('Flat Lens type checking', t => [
     OK(t)<Audit<['a'], { a: [1, 2, 3] }>>(),
