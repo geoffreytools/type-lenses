@@ -47,17 +47,17 @@ declare const foo: <
 
 // compiles
 const bar = <
-    Path extends readonly string[] & Check,
+    const Path extends readonly string[] & Check,
     Obj extends object,
     Check = Audit<Path, Obj>
 >(path: Path, obj: Obj) =>
     foo<Path, Obj, Check>(path, obj)
 
 // compiles
-const baz = <P extends readonly string[]>(path: P, obj: object) =>
+const baz = <const P extends readonly string[]>(path: P, obj: object) =>
     foo(path, obj, null as any)
 
 test('type information is not lost', t => [
-    t.equal(bar(['a'] as const, { a: 42 }), ['a'] as const),
-    t.equal(baz(['a'] as const, { a: 42 }), ['a'] as const)
+    t.equal(bar(['a'], { a: 42 }), ['a'] as const),
+    t.equal(baz(['a'], { a: 42 }), ['a'] as const)
 ])

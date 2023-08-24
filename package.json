@@ -16,7 +16,7 @@
   "devDependencies": {
     "ts-spec": "^1.5.0",
     "ts-trace": "github:geoffreytools/ts-trace",
-    "typescript": "^4.9.4"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "free-types": "^0.12.0",
