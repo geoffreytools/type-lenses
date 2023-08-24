@@ -494,6 +494,13 @@ type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, [], 1>
 
 `Audit` is the type being used internally to type check `Lens`, but it can be used with functions as well.
 
+Success is represented either by `QueryItem`, `QueryItem[]` or `readonly QueryItem[]` depending on your input. You should not need to check for success, but if you do, consider using the companion type `Successful` which returns a boolean:
+
+```typescript
+type OK = Successful<Audit<['a', 'b'], { a: { b: number, c: number }}>>;
+// type OK: true
+```
+
 #### Syntax
 `Audit<Query, Model>`
 

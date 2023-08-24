@@ -1,5 +1,5 @@
 import { test, Context } from 'ts-spec';
-import { Lens, a, b, r, Output, Get, Replace, free, self, QueryItem, Audit } from '../src/';
+import { Lens, a, b, r, Output, Get, Replace, free, self, QueryItem, Audit, Successful } from '../src/';
 
 test('r', t => [
     t.equal<r, Output>(),
@@ -157,4 +157,9 @@ test('Nested Lens type checking', t => [
 
 test('The audit is open-ended when the error is not the last query item', t => [
     t.equal<Audit<['h', 'b'], { a: { b: 1 } }>, ['a', ...QueryItem[]]>()
+])
+
+test('Successful returns a boolean representing success', t => [
+    t.true<Successful<Audit<['a'], { a: 1 }>>>(),
+    t.false<Successful<Audit<['b'], { a: 1 }>>>(),
 ])

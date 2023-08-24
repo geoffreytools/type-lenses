@@ -4,15 +4,21 @@ import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOver, IsA
 import { Lens } from './Lens';
 import { FollowPath, NOT_FOUND } from './Follow';
 
+export type Successful<Check> =
+    QueryItem[] extends Check ? true
+    : QueryItem extends Check ? true
+    : false
+
 export type Audit<
     Q extends Query,
     Model,
     I extends number = 0,
     L extends ILens = Lens<Q>,
     F = FollowPath<L['path'][I], Model, Model>
-> = F extends NOT_FOUND ? HandleError<Model, Q, L, I>
+> = IsAny<F> extends true ? Success<Q>
+    : [F] extends [NOT_FOUND] ? HandleError<Model, Q, L, I>
     : Next<I> extends L['path']['length']
-    ? Q extends readonly unknown[] ? readonly QueryItem[] : QueryItem
+    ? Success<Q>
     : Audit<Q, F, Next<I>, L>;
 
 type Success<Q> = Q extends readonly unknown[]
