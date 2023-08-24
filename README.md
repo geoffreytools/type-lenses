@@ -147,7 +147,7 @@ type EveryPath = FindPaths<Haystack>;
 
 ### Audit queries
 
-Finally, we can type check a query, typically in a function:
+Finally, we can type check a query, for example in a function:
 
 ```typescript
 declare const foo: <
@@ -156,10 +156,18 @@ declare const foo: <
     Check = Audit<Path, Obj>
 >(path: Path, obj: Obj) => void;
 
-foo(['q', 'b'], { a: { b: 42 }})
+foo(['q', 'b'], { a: { b: 42, c: 2001 }})
 //   ~~~ Type "q" is not assignable to type "a"
 ```
+This behaviour also enables reliable auto-completion:
 
+```typescript
+foo([''], {a: { b: 42, c: 2001 }})
+//   -- suggest "a"
+
+foo(['a', ''], {a: { b: 42, c: 2001 }})
+//        -- suggest "b" | "c"
+```
 # Documentation
 
 [Type Checking](#type-checking) | [Lens](#lens) | [Query](#Query) | [Type](#type) | [Get](#get) | [GetMulti](#getmulti) | [Replace](#replace) | [Over](#over) | [FindReplace](#findreplace) | [FindPath(s)](#findpaths) | [Audit](#audit) | [Free utils](#get-getmulti-replace-over)
@@ -493,6 +501,16 @@ type PathsSubset = FindPaths<{ a: [1], b: [2] }, number, [], 1>
 ### `Audit`
 
 `Audit` is the type being used internally to type check `Lens`, but it can be used with functions as well.
+
+It returns a `Suggestion` which is a type related to a `Query` that can contain unions and be open-ended:
+
+```typescript
+type Suggestion = Audit<['q', 'b'], { a: { b: number, c: number }}>;
+// type Suggestion: ['a', ...QueryItem[]]
+
+type Suggestion = Audit<['a', 'd'], { a: { b: number, c: number }}>;
+// type Suggestion: ['a', 'b' | 'c']
+```
 
 Success is represented either by `QueryItem`, `QueryItem[]` or `readonly QueryItem[]` depending on your input. You should not need to check for success, but if you do, consider using the companion type `Successful` which returns a boolean:
 
