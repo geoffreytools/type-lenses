@@ -1,5 +1,5 @@
 import { self, Param, Output, Key, PathItem, Fn, Indexable } from './types'
-import { Next } from './utils'
+import { IsArray, Next } from './utils'
 import { Type, apply } from 'free-types-core';
 
 export { ModifyPath };
@@ -10,7 +10,8 @@ type ModifyPath<I extends PathItem, Data, V> =
         ? (...args: SetIndex<I['key'], V, Parameters<Data>>) =>
         ReturnType<Data>
         : never
-    : I extends number ? Data extends unknown[] ? SetIndex<I, V, Data> : never
+    : I extends number ? IsArray<Data> extends true ? SetElement<Data, V>
+        : Data extends unknown[] ? SetIndex<I, V, Data> : never
     : I extends Key ? Data extends Indexable ? {
         [K in keyof Data as FilteredKeys<Data, K>]
             : K extends I | `${I & string}` ? V : Data[K];
@@ -19,6 +20,11 @@ type ModifyPath<I extends PathItem, Data, V> =
     : I extends Type ? V extends unknown[] ? apply<I, V> : never
     : never
 
+
+type SetElement<Data, V> =
+    Data extends unknown[] ? V[]
+    : Data extends readonly unknown[] ? readonly V[]
+    : never;
 
 type SetIndex<
     A extends number,

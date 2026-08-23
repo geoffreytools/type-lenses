@@ -20,6 +20,11 @@ test('FindReplace', t => [
     t.equal<FindReplace<{ a: 1, b: 'b' }, number, [42]>, { a: 42, b: 'b' }>(),
 ])
 
+test('FindReplace nested', t => [
+    t.equal<FindReplace<{ a: number, b: number[] }, number, [boolean]>, { a: boolean, b: boolean[] }>(),
+    t.equal<FindReplace<{ a: number, b: readonly number[] }, number, [boolean]>, { a: boolean, b: readonly boolean[] }>(),
+])
+
 test('FindReplace with unary free type', t => [
     t.equal<FindReplace<{ a: 1, b: 2 }, number, $Next>, { a: 2, b: 3 }>(),
 ])

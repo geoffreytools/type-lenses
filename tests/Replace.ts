@@ -69,3 +69,13 @@ test('$Replace produces a free type expecting Data', t => {
 
     return t.equal<Result, { foo: 'hello' }>()
 })
+
+test('Replace replaces the element type of an array', t => [
+    t.equal<Replace<[free.Array, 0], number[], boolean>, boolean[]>(),
+    t.equal<Replace<[number], number[], boolean>, boolean[]>()
+]);
+
+test('Replace replaces the element type of a readonly array', t => [
+    t.equal<Replace<[free.ReadonlyArray, 0], readonly number[], boolean>, readonly boolean[]>(),
+    t.equal<Replace<[number], readonly number[], boolean>, readonly boolean[]>()
+]);
