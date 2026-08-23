@@ -1,5 +1,5 @@
 import { self, Param, Output, Key, PathItem, Fn, Indexable } from './types'
-import { IsArray, Next } from './utils'
+import { HeadLength, IsArray, IsOpenEnded, Next, RestElement } from './utils'
 import { Type, apply } from 'free-types-core';
 
 export { ModifyPath };
@@ -11,6 +11,8 @@ type ModifyPath<I extends PathItem, Data, V> =
         ReturnType<Data>
         : never
     : I extends number ? IsArray<Data> extends true ? SetElement<Data, V>
+        : IsOpenEnded<Data> extends true
+            ? Data extends readonly unknown[] ? SetOpenEnded<I, V, Data> : never
         : Data extends unknown[] ? SetIndex<I, V, Data> : never
     : I extends Key ? Data extends Indexable ? {
         [K in keyof Data as FilteredKeys<Data, K>]
@@ -20,6 +22,19 @@ type ModifyPath<I extends PathItem, Data, V> =
     : I extends Type ? V extends unknown[] ? apply<I, V> : never
     : never
 
+type SetOpenEnded<
+    I extends number,
+    V,
+    T extends readonly unknown[],
+    Head extends unknown[] = HeadOf<T, HeadLength<T>>
+> = number extends I ? [...Head, ...V[]]
+    : [...SetIndex<I, V, Head>, ...RestElement<T>[]];
+
+type HeadOf<
+    T extends readonly unknown[],
+    N extends number,
+    R extends unknown[] = []
+> = R['length'] extends N ? R : HeadOf<T, N, [...R, T[R['length']]]>;
 
 type SetElement<Data, V> =
     Data extends unknown[] ? V[]

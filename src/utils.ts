@@ -9,6 +9,22 @@ export { _$Optional} from 'free-types/essential/adapters/$Optional';
 
 export type IsArray<T> = any[] extends T ? true : never[] extends T ? true : false;
 
+export type IsOpenEnded<T> =
+    T extends readonly unknown[]
+        ? IsArray<T> extends true ? false
+        : number extends T['length'] ? true : false
+    : false;
+
+export type HeadLength<T extends readonly unknown[], R extends unknown[] = []> =
+    number extends T['length']
+        ? T extends readonly [unknown, ...infer Rest]
+            ? HeadLength<Rest, [...R, unknown]>
+            : R['length']
+        : never;
+
+export type RestElement<T extends readonly unknown[]> =
+    T extends readonly [unknown, ...infer Rest] ? RestElement<Rest> : T[number];
+
 export type GetOrElse<T, U, E> = T extends U ? T : E;
 
 export type GenericFree = Exclude<

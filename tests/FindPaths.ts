@@ -113,6 +113,12 @@ test('FindPath: deal with unknown', t => [
     t.equal<FindPath<needle, unknown>, never>(),
 ])
 
+test('FindPaths iterates the head and the rest of an open-ended tuple', t => [
+    t.equal<FindPaths<[string, ...needle[]], needle>, [[number]]>(),
+    t.equal<FindPaths<[needle, ...string[]], needle>, [[0]]>(),
+    t.equal<FindPaths<[string, needle, ...needle[]], needle>, [[1], [number]]>(),
+])
+
 test('FindPaths can find paths which are not leaves', t => [
     t.equal<
         FindPaths<[[1, 2], 3]>,

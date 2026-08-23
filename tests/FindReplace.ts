@@ -25,6 +25,11 @@ test('FindReplace nested', t => [
     t.equal<FindReplace<{ a: number, b: readonly number[] }, number, [boolean]>, { a: boolean, b: readonly boolean[] }>(),
 ])
 
+test('FindReplace open-ended tuple', t => [
+    t.equal<FindReplace<[string, ...number[]], number, [boolean]>, [string, ...boolean[]]>(),
+    t.equal<FindReplace<[number, ...number[]], number, [boolean]>, [boolean, ...boolean[]]>(),
+])
+
 test('FindReplace with unary free type', t => [
     t.equal<FindReplace<{ a: 1, b: 2 }, number, $Next>, { a: 2, b: 3 }>(),
 ])

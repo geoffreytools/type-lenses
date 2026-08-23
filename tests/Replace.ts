@@ -79,3 +79,9 @@ test('Replace replaces the element type of a readonly array', t => [
     t.equal<Replace<[free.ReadonlyArray, 0], readonly number[], boolean>, readonly boolean[]>(),
     t.equal<Replace<[number], readonly number[], boolean>, readonly boolean[]>()
 ]);
+
+test('Replace targets the head and the rest of an open-ended tuple', t => [
+    t.equal<Replace<[number], [string, ...number[]], boolean>, [string, ...boolean[]]>(),
+    t.equal<Replace<[0], [string, ...number[]], boolean>, [boolean, ...number[]]>(),
+    t.equal<Replace<[1], [string, number, ...number[]], boolean>, [string, boolean, ...number[]]>()
+]);

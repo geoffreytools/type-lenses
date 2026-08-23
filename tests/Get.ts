@@ -123,3 +123,8 @@ test('$GetMulti produces a free type expecting Data', t => {
 
     return t.equal<Result, ['hello', 'world']>()
 })
+
+test('Get targets the head and the rest of an open-ended tuple', t => [
+    t.equal<Get<[number], [string, ...number[]]>, number>(),
+    t.equal<Get<[0], [string, ...number[]]>, string>()
+]);

@@ -1,6 +1,6 @@
 import { self, Param, Output, Key, PathItem, Fn, NOT_FOUND } from './types'
 import { Type, inferArgs, Generic, apply } from 'free-types-core';
-import { IsAny, Parameters } from './utils';
+import { IsAny, IsOpenEnded, Parameters, RestElement } from './utils';
 
 export { FollowPath, NOT_FOUND }
 
@@ -10,7 +10,8 @@ type FollowPath<I extends PathItem, Data, Self> =
     : I extends Param ? Data extends Fn ? IfDefined<Parameters<Data>[I['key']]> : NOT_FOUND
     : I extends Key ?
         Data extends ReadonlyArray<unknown>
-            ? I extends keyof Data ? IfDefined<Data[I]> : NOT_FOUND
+            ? [number, IsOpenEnded<Data>] extends [I, true] ? RestElement<Data>
+            : I extends keyof Data ? IfDefined<Data[I]> : NOT_FOUND
         : Data extends Record<PropertyKey, unknown>
             ? I extends keyof Data ? Data[I] : NOT_FOUND
         : NOT_FOUND
