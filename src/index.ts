@@ -4,7 +4,7 @@ export { Replace, $Replace } from './Replace'
 export { Over, $Over } from './Over'
 export { FindPaths } from './FindPaths'
 export { FindPath } from './FindPath'
-export { FindReplace, $ReplaceCallback } from './FindReplace'
+export { FindReplace, $ReplaceCallback, $ReplaceTable } from './FindReplace'
 export * from './placeholders'
 export { self, Output, QueryItem, Query, Path, Param } from './types'
 export { free } from 'free-types-core';

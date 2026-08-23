@@ -78,7 +78,25 @@ type YihaStack = FindReplace<Haystack, needle, ['Yiha!']>;
 Map<string, {foo: [(f: (arg: string) => 'Yiha!') => void, 'bar'] }>
 ```
 
-It also accepts a replace callback of type `Type<[Needle, Path?]>` if you need to run arbitrary logic:
+It accepts a replace table if you need multiple well defined replacements:
+
+```typescript
+import { $ReplaceTable } from 'type-lenses';
+
+type Data = { a: Buffer, b: Buffer[] };
+
+type Nested = FindReplace<Data, Buffer | Buffer[], $ReplaceTable<[
+    [Buffer[], { cells: number[][][] }],
+    [Buffer,   { cells: number[][] }]
+]>>;
+```
+
+```typescript
+// result:
+{ a: { cells: number[][] }, b: { cells: number[][][] }};
+```
+
+It also accepts any other replace callback of type `Type<[Needle, Path?]>` if you need to run arbitrary logic:
 
 ```typescript
 // any unary free type can work
@@ -415,6 +433,52 @@ type WithValues = FindReplace<[1, 2, 3], number, [42, 2001]>;
 #### Type checking
 
 If you use a replace callback, its first parameter must extend your `Needle`.
+
+#### Replace table
+
+`$ReplaceTable` is a replace callback which maps each needle to its own replace value. It takes a tuple of `[needle, value]` entries:
+
+```typescript
+import { $ReplaceTable } from 'type-lenses';
+
+type Table = [
+    [Buffer[], { cells: number[][][] }],
+    [Buffer,   { cells: number[][] }]
+];
+
+type Data = { a: Buffer, b: Buffer[] };
+
+type Replaced = FindReplace<Data, Buffer | Buffer[], $ReplaceTable<Table>>;
+// type Replaced = { a: { cells: number[][] }, b: { cells: number[][][] } }
+```
+
+Entries are tried in order and the first needle matching the value at a given site wins, so an entry must precede any other entry it extends:
+
+```typescript
+type Broad = $ReplaceTable<[[number, 'broad'], [1, 'narrow']]>;
+type Narrow = $ReplaceTable<[[1, 'narrow'], [number, 'broad']]>;
+
+type A = FindReplace<{ a: 1 }, number, Broad>;  // { a: 'broad' }
+type B = FindReplace<{ a: 1 }, number, Narrow>; // { a: 'narrow' }
+```
+
+The `Needle` is a separate parameter, so it must cover the same types as the table. Deriving it from the table keeps the two in agreement:
+
+```typescript
+type Needles = Table[number][0]; // Buffer | Buffer[]
+
+type Replaced = FindReplace<Data, Needles, $ReplaceTable<Table>>;
+```
+
+> **Warning**
+> A `Needle` matching more types than the table covers still replaces the surplus matches, because a replace callback is applied to every match the search returns.
+
+```typescript
+type Table = [[number, 'hit']];
+
+type Surprising = FindReplace<{ a: 'x' }, string | number, $ReplaceTable<Table>>;
+// type Surprising = { a: 'hit' }
+```
 
 #### Replace callback
 

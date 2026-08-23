@@ -2,6 +2,7 @@ import { test } from 'ts-spec';
 import { FindReplace, $ReplaceCallback } from '../src/';
 import { Type, A, B, Optional, Last } from "free-types-core";
 import { Next } from '../src/utils';
+import type { $ReplaceTable } from '../src/FindReplace';
 
 interface $Next extends Type<[number], number> { type: Next<A<this>> }
 
@@ -42,6 +43,17 @@ test('FindReplace with unary free type', t => [
 test('FindReplace with binary free type', t => [
     t.equal<FindReplace<{ a: 1, b: 2 }, number, $Callback>, { a: 42, b: 2001 }>(),
 ])
+
+test('FindReplace with a replace table', t => {
+    type From = { a: Float32Array, b: Float32Array[] };
+    type To = { a: { data: number[][] }, b: { data: number[][][]}};
+    type Needles = Table[number][0];
+    type Table = [
+        [Float32Array[], { data: number[][][] }],
+        [Float32Array,   { data: number[][] }],
+    ];
+    return t.equal<FindReplace<From, Needles, $ReplaceTable<Table>>, To>()
+})
 
 test('FindReplace multiple needles', t => [
     t.equal<FindReplace<{ a: 1, b: 2 }, number, [42]>, { a: 42, b: 42 }>(),
