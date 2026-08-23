@@ -30,6 +30,11 @@ test('FindReplace open-ended tuple', t => [
     t.equal<FindReplace<[number, ...number[]], number, [boolean]>, [boolean, ...boolean[]]>(),
 ])
 
+test('FindReplace preserves the mutability of a tuple', t => [
+    t.equal<FindReplace<readonly [number, string], number, [boolean]>, readonly [boolean, string]>(),
+    t.equal<FindReplace<[readonly [number]], number, [boolean]>, [readonly [boolean]]>(),
+])
+
 test('FindReplace with unary free type', t => [
     t.equal<FindReplace<{ a: 1, b: 2 }, number, $Next>, { a: 2, b: 3 }>(),
 ])

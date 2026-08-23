@@ -11,9 +11,11 @@ type ModifyPath<I extends PathItem, Data, V> =
         ReturnType<Data>
         : never
     : I extends number ? IsArray<Data> extends true ? SetElement<Data, V>
-        : IsOpenEnded<Data> extends true
-            ? Data extends readonly unknown[] ? SetOpenEnded<I, V, Data> : never
-        : Data extends unknown[] ? SetIndex<I, V, Data> : never
+        : Data extends readonly unknown[]
+            ? AsMutableAs<Data, IsOpenEnded<Data> extends true
+                ? SetOpenEnded<I, V, Data>
+                : SetIndex<I, V, Mutable<Data>>>
+        : never
     : I extends Key ? Data extends Indexable ? {
         [K in keyof Data as FilteredKeys<Data, K>]
             : K extends I | `${I & string}` ? V : Data[K];
@@ -21,6 +23,11 @@ type ModifyPath<I extends PathItem, Data, V> =
     : I extends self ? V
     : I extends Type ? V extends unknown[] ? apply<I, V> : never
     : never
+
+type AsMutableAs<Model extends readonly unknown[], T extends readonly unknown[]> =
+    Model extends unknown[] ? T : Readonly<T>;
+
+type Mutable<T extends readonly unknown[]> = [...T];
 
 type SetOpenEnded<
     I extends number,

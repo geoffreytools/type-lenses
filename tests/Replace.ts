@@ -85,3 +85,10 @@ test('Replace targets the head and the rest of an open-ended tuple', t => [
     t.equal<Replace<[0], [string, ...number[]], boolean>, [boolean, ...number[]]>(),
     t.equal<Replace<[1], [string, number, ...number[]], boolean>, [string, boolean, ...number[]]>()
 ]);
+
+test('Replace preserves the mutability of a tuple', t => [
+    t.equal<Replace<[0], readonly [number, string], boolean>, readonly [boolean, string]>(),
+    t.equal<Replace<[0, 0], readonly [readonly [number], string], boolean>, readonly [readonly [boolean], string]>(),
+    t.equal<Replace<[number], readonly [string, ...number[]], boolean>, readonly [string, ...boolean[]]>(),
+    t.equal<Replace<[0], readonly [string, ...number[]], boolean>, readonly [boolean, ...number[]]>()
+]);
