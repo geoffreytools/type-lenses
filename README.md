@@ -241,7 +241,7 @@ Path items can be one of the following types:
 </tr>
 <tr>
 <td><code>number</code></td>
-<td>Focuses on the item at a given index in a tuple.</td>
+<td>A literal index focuses on the item at that index in a tuple. The <code>number</code> type itself focuses on the element type of an array.</td>
 </tr>
 <tr>
 <td><code>self</code></td>
