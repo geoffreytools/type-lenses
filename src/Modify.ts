@@ -1,6 +1,6 @@
 import { self, Param, Output, Key, PathItem, Fn, Indexable } from './types'
 import { HeadLength, IsArray, IsOpenEnded, Next, RestElement } from './utils'
-import { Type, Expect, apply } from 'free-types-core';
+import { _apply } from 'free-types-core';
 
 export { ModifyPath };
 
@@ -21,7 +21,7 @@ type ModifyPath<I extends PathItem, Data, V> =
             : K extends I | `${I & string}` ? V : Data[K];
     } : never
     : I extends self ? V
-    : I extends Expect<Type> ? V extends unknown[] ? apply<I, V> : never
+    : I extends { type: unknown } ? V extends unknown[] ? _apply<I, V> : never
     : never
 
 type AsMutableAs<Model extends readonly unknown[], T extends readonly unknown[]> =
