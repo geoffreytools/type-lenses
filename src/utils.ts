@@ -1,11 +1,11 @@
 import { TypesMap, Generic } from 'free-types-core';
-import { Next } from 'free-types-core/dist/utils';
+import { Next } from 'free-types-core/dist/utils.js';
 import { Fn } from './types'
 
-export { Next, Prev, Subtract, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';
-export { MapOver as MapOverTuple } from 'free-types/essential/Tuple/MapOver';
-export { _ } from 'free-types/essential/_partial';
-export { _$Optional} from 'free-types/essential/adapters/$Optional';
+export { Next, Prev, Subtract, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils.js';
+export { MapOver as MapOverTuple } from 'free-types/essential/Tuple/MapOver.js';
+export { _ } from 'free-types/essential/_partial.js';
+export { _$Optional} from 'free-types/essential/adapters/$Optional.js';
 
 export type IsArray<T> = any[] extends T ? true : never[] extends T ? true : false;
 
