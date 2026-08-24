@@ -1,6 +1,6 @@
-import { unwrap, Type, B, Slice } from 'free-types-core';
+import { unwrap, Slice } from 'free-types-core';
 import { Fn, Param, Output, Query, ILens, Path, QueryItem } from './types';
-import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOverTuple, IsAny } from './utils';
+import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, IsAny } from './utils';
 import { Lens } from './Lens';
 import { FollowPath, NOT_FOUND } from './Follow';
 
@@ -33,16 +33,17 @@ type HandleError<
     R extends readonly QueryItem[] = SaveReadonly<Q, ProperPath<Model, L, I>>
 > = Q extends ILens ? Lens<R>
     : Q extends [ILens] ? [Lens<R>]
-    : Q extends readonly QueryItem[] ? MapOverTuple<R, $WrapIfLens<Q>>
+    : Q extends readonly QueryItem[] ? WrapIfLens<Q, R>
     : Q extends QueryItem ? R[0]
     : R
 
 type SaveReadonly<Q, P extends readonly unknown[]> =
     Q extends unknown[] ? P : readonly [...P];
 
-interface $WrapIfLens<Q extends readonly QueryItem[]> extends Type<2> {
-    type: Q[B<this>] extends ILens ? Lens<this[0]> : this[0]
-    constraints: [QueryItem, number]
+type WrapIfLens<Q extends readonly QueryItem[], R extends readonly QueryItem[]> = {
+    [K in keyof R]: K extends keyof Q
+        ? Q[K] extends ILens ? Lens<R[K]> : R[K]
+        : R[K]
 }
 
 type ProperPath<Model, L extends ILens, I extends number, N extends QueryItem = NextPathItem<Model>> =
