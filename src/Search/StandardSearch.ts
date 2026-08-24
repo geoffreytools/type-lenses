@@ -22,8 +22,10 @@ interface $Total<Needle, $D extends $DeepSearch> extends $TotalSearch {
 }
 
 interface $Shallow<Needle> extends $ShallowSearch {
-    type: unknown extends this[0] ? ShallowSearchResult
+    type: this[0] extends infer Limit
+        ? [unknown] extends [Limit] ? ShallowSearchResult
         : ShallowSearch<Needle, Lossy<0, this>, Checked<1, this>>
+    : never
 }
 
 type TotalSearch<
