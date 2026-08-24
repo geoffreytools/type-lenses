@@ -15,11 +15,13 @@ type FindReplace<T, Needle, V extends [unknown, ...unknown[]] | $Callback<Needle
         ? T
         : Queries extends Path[]
         ? Fold<Queries, T,
-            V extends unknown[] ? $WithValue<V>
-            : V extends Expect<Type<[Needle]>>
-            ? $WithUnaryCallback<V>
-            : V extends Expect<Type>
-            ? $WithBinaryCallback<V>
+            V extends infer _V
+                ? _V extends unknown[] ? $WithValue<_V>
+                : _V extends Expect<Type<[Needle]>>
+                ? $WithUnaryCallback<_V>
+                : _V extends Expect<Type>
+                ? $WithBinaryCallback<_V>
+                : never
             : never>
         : never
     : never
