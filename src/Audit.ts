@@ -1,6 +1,6 @@
 import { unwrap, Type, B, Slice } from 'free-types-core';
 import { Fn, Param, Output, Query, ILens, Path, QueryItem } from './types';
-import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOver, IsAny } from './utils';
+import { Prev, Next, Parameters, ToNumber, GenericFree, SequenceTo, MapOverTuple, IsAny } from './utils';
 import { Lens } from './Lens';
 import { FollowPath, NOT_FOUND } from './Follow';
 
@@ -33,7 +33,7 @@ type HandleError<
     R extends readonly QueryItem[] = SaveReadonly<Q, ProperPath<Model, L, I>>
 > = Q extends ILens ? Lens<R>
     : Q extends [ILens] ? [Lens<R>]
-    : Q extends readonly QueryItem[] ? MapOver<R, $WrapIfLens<Q>>
+    : Q extends readonly QueryItem[] ? MapOverTuple<R, $WrapIfLens<Q>>
     : Q extends QueryItem ? R[0]
     : R
 

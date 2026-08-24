@@ -3,7 +3,7 @@ import { Next } from 'free-types-core/dist/utils';
 import { Fn } from './types'
 
 export { Next, Prev, Subtract, Last, Init, IsAny, IsUnknown } from 'free-types-core/dist/utils';
-export { MapOver } from 'free-types/essential/mappables/MapOver';
+export { MapOver as MapOverTuple } from 'free-types/essential/Tuple/MapOver';
 export { _ } from 'free-types/essential/_partial';
 export { _$Optional} from 'free-types/essential/adapters/$Optional';
 
