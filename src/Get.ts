@@ -2,7 +2,7 @@ import { Query, ILens } from './types';
 import { Next, MapOverTuple, _, _$Optional } from './utils';
 import { FollowPath, NOT_FOUND } from './Follow';
 import { Lens } from './Lens';
-import { Type, Checked, Optional, A, B, C, $partial, $apply } from 'free-types-core'
+import { Type, Optional, B, C, $partial, $apply } from 'free-types-core'
 
 export { Get, GetMulti, $Get, $GetMulti }
 
@@ -24,14 +24,18 @@ type GetMulti<Qs extends Query[], Data, Self = Data> =
     MapOverTuple<MapOverTuple<Qs, $partial<$Get>>, $apply<[Data, Self]>>
 
 interface _$Get extends Type<[Query, unknown, unknown?]> {
-    type: Get<Checked<A, this>, B<this>, Optional<C, this, B<this>>>
+    type: this[0] extends infer Q extends Query
+        ? Get<Q, B<this>, Optional<C, this, B<this>>>
+        : never
 }
 
 type $Get<Q extends Query= never, Self = never> =
     _$Optional<_$Get, [Q, _, Self]>
 
 interface _$GetMulti extends Type<[Query[], unknown, unknown?]> {
-    type: GetMulti<Checked<A, this>, B<this>, Optional<C, this, B<this>>>
+    type: this[0] extends infer Qs extends Query[]
+        ? GetMulti<Qs, B<this>, Optional<C, this, B<this>>>
+        : never
 }
 
 type $GetMulti<Qs extends Query[]= never, Self = never> =
