@@ -1,8 +1,8 @@
 import { Query, ILens } from './types';
-import { Next, MapOverTuple, _, _$Optional } from './utils';
+import { Next, _, _$Optional } from './utils';
 import { FollowPath, NOT_FOUND } from './Follow';
 import { Lens } from './Lens';
-import { Type, Optional, B, C, $partial, $apply } from 'free-types-core'
+import { Type, Optional, B, C } from 'free-types-core'
 
 export { Get, GetMulti, $Get, $GetMulti }
 
@@ -19,9 +19,9 @@ type _Get<
     : Next<I> extends L['path']['length'] ? F
     : _Get<L, F, Self, Next<I>>;
 
-// naive implementation but it is not obvious that a custom traversal would perform better
-type GetMulti<Qs extends Query[], Data, Self = Data> =
-    MapOverTuple<MapOverTuple<Qs, $partial<$Get>>, $apply<[Data, Self]>>
+type GetMulti<Qs extends Query[], Data, Self = Data> = {
+    [K in keyof Qs]: Qs[K] extends infer Q extends Query ? Get<Q, Data, Self> : never
+}
 
 interface _$Get extends Type<[Query, unknown, unknown?]> {
     type: this[0] extends infer Q extends Query
