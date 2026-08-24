@@ -17,10 +17,10 @@ type FindReplace<T, Needle, V extends [unknown, ...unknown[]] | $Callback<Needle
         ? Fold<Queries, T,
             V extends infer _V
                 ? _V extends unknown[] ? $WithValue<_V>
-                : _V extends Expect<Type<[Needle]>>
-                ? $WithUnaryCallback<_V>
                 : _V extends Expect<Type>
-                ? $WithBinaryCallback<_V>
+                ? IsUnary<_V> extends true
+                ? $WithUnaryCallback<_V>
+                : $WithBinaryCallback<_V>
                 : never
             : never>
         : never
@@ -31,15 +31,22 @@ interface $WithValue<V extends unknown[]> extends Type<[unknown, Path, number]> 
         : Replace<Checked<B, this>, A<this>, LastAvailable<V, C<this>>, any>
 }
 
-interface $WithUnaryCallback<V extends Expect<Type<1>>> extends Type<[unknown, Path]> {
+interface $WithUnaryCallback<V extends Expect<Type>> extends Type<[unknown, Path]> {
     type: unknown extends this[1] ? unknown
         : Over<Checked<B, this>, A<this>, V, any>
 }
 
 interface $WithBinaryCallback<V extends Expect<Type>> extends Type<[unknown, Path]> {
     type: unknown extends this[1] ? unknown
-        : Over<Checked<B, this>, A<this>,
-            partialRight<V, [Checked<B, this>], $Callback>, any>
+        : Over<Checked<B, this>, A<this>, $BindPath<V, Checked<B, this>>, any>
+}
+
+type IsUnary<V> = V extends { constraints: infer C extends { length: unknown } }
+    ? [C['length']] extends [1] ? true : false
+    : false;
+
+interface $BindPath<V extends Expect<Type>, P extends Path> extends Type<1> {
+    type: _apply<V, [this[0], P]>
 }
 
 // TODO: make free-types/Fold accept an index
