@@ -1,5 +1,5 @@
 import { PathItem, Query, ILens } from './types'
-import { Type, Expect, apply } from 'free-types-core';
+import { Type, Expect, _apply } from 'free-types-core';
 import { Next } from './utils';
 import { ModifyPath } from './Modify';
 import { FollowPath, NOT_FOUND } from './Follow';
@@ -35,15 +35,15 @@ type Audit<T extends any[], V extends any[], R, I extends number = 0, C extends 
 type _Over<
     L extends ILens,
     Data,
-    $V extends Type,
+    $V extends Expect<Type>,
     I extends number = 0,
     C extends PathItem = L['path'][I],
     F = FollowPath<C, Data, Data>
-> = I extends L['path']['length'] ? apply<$V, [Data]>
+> = I extends L['path']['length'] ? _apply<$V, [Data]>
     : F extends NOT_FOUND ? Data
     : ModifyPath<C, Data, _Over<L, F, $V, Next<I>>>;
 
-interface $Over<Q extends Query, $V extends Type> extends Type<1> {
+interface $Over<Q extends Query, $V extends Expect<Type>> extends Type<1> {
     type: _Over<Lens<Q>, this[0], $V>
 }
 

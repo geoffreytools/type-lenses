@@ -1,7 +1,7 @@
 import { FindPaths } from "./FindPaths";
 import { Path } from "./types";
 import { Next } from "./utils";
-import { Type, Expect, A, B, C, Checked, apply, Last, partialRight } from "free-types-core";
+import { Type, Expect, A, B, C, Checked, _apply, Last, partialRight } from "free-types-core";
 import { Replace } from "./Replace";
 import { Over } from "./Over";
 
@@ -29,12 +29,12 @@ interface $WithValue<V extends unknown[]> extends Type<[unknown, Path, number]> 
         : Replace<Checked<B, this>, A<this>, LastAvailable<V, C<this>>, any>
 }
 
-interface $WithUnaryCallback<V extends Type<1>> extends Type<[unknown, Path]> {
+interface $WithUnaryCallback<V extends Expect<Type<1>>> extends Type<[unknown, Path]> {
     type: unknown extends this[1] ? unknown
         : Over<Checked<B, this>, A<this>, V, any>
 }
 
-interface $WithBinaryCallback<V extends Type> extends Type<[unknown, Path]> {
+interface $WithBinaryCallback<V extends Expect<Type>> extends Type<[unknown, Path]> {
     type: unknown extends this[1] ? unknown
         : Over<Checked<B, this>, A<this>,
             partialRight<V, [Checked<B, this>], $Callback>, any>
@@ -48,7 +48,7 @@ type Fold<
     Acc extends unknown = Init,
     I extends number = 0
 > = I extends T['length'] ? Acc
-    : Fold<T, Init, $T, apply<$T, [Acc, T[I], I]>, Next<I>>;
+    : Fold<T, Init, $T, _apply<$T, [Acc, T[I], I]>, Next<I>>;
 
 type LastAvailable<V extends unknown[], I extends number> =
     IsIndexOf<V, I> extends true ? V[I] : Last<V>;
