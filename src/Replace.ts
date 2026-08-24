@@ -1,5 +1,5 @@
 import { PathItem, Query, ILens } from './types'
-import { Type } from 'free-types-core';
+import { Type, Expect } from 'free-types-core';
 import { Next, Last } from './utils';
 import { ModifyPath } from './Modify';
 import { Lens } from './Lens';
@@ -12,8 +12,8 @@ type Replace<Q extends Query, Data, V extends Constraint, Constraint = ValidValu
 
 type ValidValue<Q extends Query, Path extends readonly unknown[] = Lens<Q>['path']> =
     [Q] extends [never] ? unknown
-    : Path extends [...any[], infer $T extends Type] ? $T['constraints']
-    : Path extends [...any[], infer $T extends Type, infer N extends number] ? $T['constraints'][N]
+    : Path extends [...any[], infer $T extends Expect<Type>] ? $T['constraints']
+    : Path extends [...any[], infer $T extends Expect<Type>, infer N extends number] ? $T['constraints'][N]
     : unknown 
 
 type _Replace<

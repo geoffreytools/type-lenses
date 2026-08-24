@@ -1,5 +1,5 @@
 import { PathItem, Query, ILens } from './types'
-import { Type, apply } from 'free-types-core';
+import { Type, Expect, apply } from 'free-types-core';
 import { Next } from './utils';
 import { ModifyPath } from './Modify';
 import { FollowPath, NOT_FOUND } from './Follow';
@@ -12,12 +12,12 @@ type Over<Q extends Query, Data, V extends Constraint, Constraint = ValidTransfo
 
 
 type ValidTransform<Q extends Query, $V, Path extends readonly unknown[] = Lens<Q>['path']> =
-    $V extends Type ?
-        Path extends [...any[], infer $T extends Type]
+    $V extends Expect<Type> ?
+        Path extends [...any[], infer $T extends Expect<Type>]
         ? RelatedTo<$T['constraints'], $V['constraints']> extends true
             ? Type<$V['constraints']['length'], $T['constraints']>
             : Audit<$T['constraints'], $V['constraints'], $T['constraints']>
-        : Path extends [...any[], infer $T extends Type, infer N extends number]
+        : Path extends [...any[], infer $T extends Expect<Type>, infer N extends number]
         ? RelatedTo<[$T['constraints'][N]], $V['constraints']> extends true
             ? Type<1, $T['constraints'][N]>
             : Audit<[$T['constraints'][N]], $V['constraints'], $T['constraints'][N]>

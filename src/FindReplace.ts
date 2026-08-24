@@ -1,7 +1,7 @@
 import { FindPaths } from "./FindPaths";
 import { Path } from "./types";
 import { Next } from "./utils";
-import { Type, A, B, C, Checked, apply, Last, partialRight } from "free-types-core";
+import { Type, Expect, A, B, C, Checked, apply, Last, partialRight } from "free-types-core";
 import { Replace } from "./Replace";
 import { Over } from "./Over";
 
@@ -16,9 +16,9 @@ type FindReplace<T, Needle, V extends [unknown, ...unknown[]] | $Callback<Needle
         : Queries extends Path[]
         ? Fold<Queries, T,
             V extends unknown[] ? $WithValue<V>
-            : V extends Type<[Needle]>
+            : V extends Expect<Type<[Needle]>>
             ? $WithUnaryCallback<V>
-            : V extends Type
+            : V extends Expect<Type>
             ? $WithBinaryCallback<V>
             : never>
         : never
@@ -44,7 +44,7 @@ interface $WithBinaryCallback<V extends Type> extends Type<[unknown, Path]> {
 type Fold<
     T extends readonly $T['constraints'][1][],
     Init extends $T['constraints'][0] & $T['type'],
-    $T extends Type<2 | 3>,
+    $T extends Expect<Type<2>> | Expect<Type<3>>,
     Acc extends unknown = Init,
     I extends number = 0
 > = I extends T['length'] ? Acc
