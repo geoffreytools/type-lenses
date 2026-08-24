@@ -1,6 +1,7 @@
 {
   "name": "type-lenses",
   "version": "0.10.1",
+  "type": "module",
   "description": "Extract or modify pieces of arbitrarily nested types with type lenses",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -16,10 +17,11 @@
   "devDependencies": {
     "ts-spec": "^1.8.1",
     "ts-trace": "github:geoffreytools/ts-trace",
+    "tsc-esm-kit": "github:geoffreytools/tsc-esm-kit#v0.3.0",
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig-build.json",
+    "build": "tsc -p ./tsconfig-build.json && tsc-esm-kit --project ./tsconfig-build.json --files",
     "test": "tsc --watch",
     "trace": "bash ./node_modules/ts-trace/ts-trace.sh"
   },
